@@ -1,0 +1,45 @@
+.example-card {
+
+  margin-top: 5%;
+  margin-bottom: 5%;
+  width: 400px;
+  box-shadow: 0 3px 6px rgba(#ACC0E9,.5);
+}
+
+.example-header-image-soles {
+  background-image: url('https://cdn-icons-png.flaticon.com/512/33/33919.png');
+  background-size: 40px;
+}
+
+.example-header-image-dolares {
+  background-image: url('https://img2.freepng.es/20180331/tzw/kisspng-dollar-sign-currency-symbol-united-states-dollar-c-dollar-sign-5abf342cc2ec01.9177383115224801727984.jpg');
+  background-size: 45px;
+}
+
+.card{
+
+  background: #FFF;
+  height: 10px;
+  border-radius: 4px;
+  position: relative;
+
+}
+.mat-parent {
+  background-color:white;
+  margin-top: 3%;
+  width: 80%;
+  margin-left: 10%;
+  /*background-image: url("/assets/img/bg1.jpg");*/
+}
+.mat-parent-small{
+  display: none;
+}
+
+.check-button{
+  background: #00B376;
+  color: #ffffff;
+}
+.btn-spacer {
+  margin-left: 5px;
+  margin-right: 5px;
+}

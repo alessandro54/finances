@@ -1,0 +1,63 @@
+<app-header></app-header>
+<div>
+  <h1 align="center">LEASING FINANZIERO UPC</h1>
+</div>
+
+<mat-card class="mat-parent">
+
+  <mat-card-title>Resumen de Tenencia</mat-card-title>
+  <mat-card-subtitle >Tipo de Cambio: 3.84</mat-card-subtitle>
+
+  <mat-divider inset></mat-divider>
+  <mat-grid-list cols="2" rowHeight="2:1">
+    <!--Card of Soles-->
+    <mat-grid-tile>
+      <mat-card class="example-card" flex flex-gt-xs="30">
+
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image-soles"></div>
+          <mat-card-title>Soles</mat-card-title>
+          <mat-card-subtitle>Moneda</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="card-body">
+            <h3 class="card-title">Detalle:</h3>
+            <p> - Cuentas </p>
+            <p> - Monto Invertido</p>
+          </div>
+        </mat-card-content>
+        <mat-divider inset></mat-divider>
+        <mat-card-actions align="end">
+          <button mat-raised-button class="check-button" [routerLink]="'/solesAccounts'" >Revisar</button>
+        </mat-card-actions>
+
+      </mat-card>
+    </mat-grid-tile>
+
+    <!--Card of Dolares-->
+    <mat-grid-tile>
+      <mat-card class="example-card" flex flex-gt-xs="30">
+
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image-dolares"></div>
+          <mat-card-title>Dolares</mat-card-title>
+          <mat-card-subtitle>Moneda</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="card-body">
+            <h3 class="card-title">Detalle:</h3>
+            <p> - Cuentas </p>
+            <p> - Monto Invertido</p>
+          </div>
+        </mat-card-content>
+        <mat-divider inset></mat-divider>
+        <mat-card-actions align="end">
+          <button mat-raised-button class="check-button" [routerLink]="'/dolaresAccounts'">Revisar</button>
+        </mat-card-actions>
+
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+</mat-card>
+<app-footer></app-footer>

@@ -1,0 +1,24 @@
+.table-wrapper {
+  width: 400px;
+  margin: auto;
+  text-align: center;
+  background-color: rgba(217, 217, 218, 0.71);
+  text-align: center;
+
+
+}
+table {
+  width: 100%;
+}
+
+tr.editable-row {
+  background-color: lightskyblue;
+}
+.section-register{
+
+  background-color: rgba(217, 217, 218, 0.71);
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}

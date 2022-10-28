@@ -1,0 +1,36 @@
+{
+  "user": [
+    {
+      "id": 1,
+      "name": "Miner",
+      "lastName": "Lozano",
+      "password": "12345#",
+      "email": "miner@gmail.com",
+      "apiId": "v1"
+    },
+    {
+      "id": 2,
+      "name": "Josue",
+      "lastName": "Cartagena",
+      "password": "12345#",
+      "email": "josue@gmail.com",
+      "apiId": "v1"
+    },
+    {
+      "name": "mierdami",
+      "lastName": "mierda",
+      "email": "mie",
+      "password": "mids",
+      "id": 3,
+      "apiId": "v1"
+    },
+    {
+      "name": "jiji",
+      "lastName": "jijij",
+      "email": "ijij",
+      "password": "jij",
+      "id": 4,
+      "apiId": "v1"
+    }
+  ]
+}

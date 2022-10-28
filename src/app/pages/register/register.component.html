@@ -1,0 +1,38 @@
+<section class="section-register">
+  <div class="table-wrapper">
+    <mat-card class="box">
+      <div class="login">
+        <img [src]="logo" alt="" width="80%" height="100%">
+        <h3 class="h3 mb-3 fw-normal">Sign up</h3>
+      </div>
+      <form (submit)="onSubmit()" #userForm='ngForm'>
+        <mat-form-field>
+          <h1>name</h1>
+          <input matInput placeholder="" name="name" required
+                 [(ngModel)]="userData.name">
+        </mat-form-field>
+        <br><br>
+        <mat-form-field>
+          <h1>lastname</h1>
+          <input matInput placeholder="" name="lastname" required
+                 [(ngModel)]="userData.lastName">
+        </mat-form-field>
+        <br><br>
+        <mat-form-field>
+          <h1>gmail</h1>
+          <input matInput placeholder="" name="gmail" required
+                 [(ngModel)]="userData.email" >
+        </mat-form-field>
+        <br><br>
+        <mat-form-field>
+          <h1>password</h1>
+          <input matInput placeholder="" name="password" required
+                 [(ngModel)]="userData.password" >
+        </mat-form-field>
+        <br><br>
+        <button mat-raised-button color="primary" [routerLink]="'/login'" (click)="signUp()">Register</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button mat-raised-button color="primary" [routerLink]="'/login'">Cancel</button>
+      </form>
+    </mat-card>
+  </div>
+</section>
