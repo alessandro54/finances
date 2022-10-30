@@ -1,31 +1,32 @@
 <section class="section-login">
-  <div>
+
+  <div class="login-wrapper">
     <mat-card class="box">
-      <div>
+      <div class="login">
         <img [src]="logo" alt="" width="80%" height="100%">
         <h3>Login</h3>
       </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <form [formGroup]="loginForm" class="example-form" (ngSubmit)="login()">
         <mat-card-content>
-          <mat-form-field>
-            <h1>email</h1>
-            <input class="example-full-width" [formControlName]="'email'" matInput placeholder="" autocomplete="ON">
+
+          <mat-form-field class="example-full-width">
+            <input [formControlName]="'email'" matInput placeholder="Correo" autocomplete="off">
           </mat-form-field>
 
-          <mat-form-field>
-            <h1>password</h1>
-            <input class="example-full-width" [formControlName]="'password'" matInput placeholder="" autocomplete="ON" [type]="show ? 'text':'password'">
+          <mat-form-field class="example-full-width">
+            <input [formControlName]="'password'" matInput placeholder="Password" autocomplete="off"  [type]="show ? 'text' : 'password'" >
+
           </mat-form-field>
 
         </mat-card-content>
 
-        <button mat-raised-button color="primary" type="submit" [routerLink]="'/body'">&nbsp; Log in &nbsp;</button>&nbsp;
-        <button mat-raised-button color="primary"  [routerLink]="'/register'">Sing Up</button>
 
+        <button mat-raised-button color="primary" class="btn-block" type="submit">&nbsp;Log in&nbsp;</button>&nbsp;
+        <button mat-raised-button color="primary" class="btn-block" [routerLink]="'/register'">sing up</button>
       </form>
-
-
     </mat-card>
   </div>
+
 </section>
+
