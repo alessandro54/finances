@@ -1,0 +1,15 @@
+.card{
+  background: #FFF;
+  height: 10px;
+  border-radius: 4px;
+  position: relative;
+}
+.mat-parent {
+  background-color:white;
+  margin-top: 3%;
+  width: 30%;
+  margin-left: 35%;
+}
+.mat-parent-small{
+  display: none;
+}

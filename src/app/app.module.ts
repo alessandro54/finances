@@ -31,6 +31,8 @@ import { RegisterComponent } from './pages/register/register.component';
 import { BodyComponent } from './pages/body/body.component';
 import { HeaderComponent } from './pages/header/header.component';
 import { FooterComponent } from './pages/footer/footer.component';
+import { ContactUsComponent } from './pages/contact-us/contact-us.component';
+import { LeasingAlemanComponent } from './pages/crud/leasing/pages/leasing-aleman/leasing-aleman.component';
 
 
 @NgModule({
@@ -41,6 +43,8 @@ import { FooterComponent } from './pages/footer/footer.component';
     BodyComponent,
     HeaderComponent,
     FooterComponent,
+    ContactUsComponent,
+    LeasingAlemanComponent,
     //HeaderComponent,
   ],
   imports: [

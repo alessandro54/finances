@@ -1,0 +1,24 @@
+.mat-parent {
+  background-color:white;
+  margin-top: 2%;
+}
+.example-card {
+  margin-top: 3%;
+  width: 100%;
+}
+.check-button{
+  background: #00B376;
+  color: #ffffff;
+}
+td {
+  padding-right: 8px;
+}
+.example-full-width {
+  width: 100px;
+}
+.example-full-width-2 {
+  width: 120px;
+}
+.example-full-width-3 {
+  width: 140px;
+}
