@@ -1,0 +1,34 @@
+h1 {
+  font-family: "Segoe UI", sans-serif;
+  font-weight: bold;
+  font-size: 32px;
+}
+.table-wrapper {
+  width: 1024px;
+  max-width: 100%;
+  overflow: auto;
+  margin: 50px auto;
+}
+
+td.mat-cell, th.mat-header-cell {
+  text-align: center;
+  justify-content:center;
+}
+
+table {
+  width: 100%;
+}
+.demo-button-container {
+  padding-bottom: 16px;
+}
+
+.demo-button{
+  color: white;
+  background-color: #00B376;
+  margin-left: 8px;
+  margin-bottom: 7px;
+}
+
+
+
+

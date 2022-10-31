@@ -1,8 +1,8 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
-import {SolesBono} from "../model/solesBono";
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import {Injectable} from "@angular/core";
+import {SolesBono} from "../model/solesBono";
 
 
 @Injectable({

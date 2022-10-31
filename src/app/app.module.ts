@@ -32,7 +32,8 @@ import { BodyComponent } from './pages/body/body.component';
 import { HeaderComponent } from './pages/header/header.component';
 import { FooterComponent } from './pages/footer/footer.component';
 import { ContactUsComponent } from './pages/contact-us/contact-us.component';
-import { LeasingAlemanComponent } from './pages/crud/leasing/pages/leasing-aleman/leasing-aleman.component';
+import { LeasingAlemanComponent } from './pages/crud/leasing/pages/leasing-aleman/leasing-aleman/leasing-aleman.component';
+import { LeasingTableComponent } from './pages/crud/leasing/pages/leasing-table/leasing-table/leasing-table.component';
 
 
 @NgModule({
@@ -45,6 +46,7 @@ import { LeasingAlemanComponent } from './pages/crud/leasing/pages/leasing-alema
     FooterComponent,
     ContactUsComponent,
     LeasingAlemanComponent,
+    LeasingTableComponent,
     //HeaderComponent,
   ],
   imports: [
