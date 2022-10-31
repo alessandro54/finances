@@ -1,0 +1,133 @@
+<p>logica del calculo maldita seaaaaaaaaa!</p>
+<mat-card class="mat-parent">
+
+  <mat-card-title>Agregar Bono Soles</mat-card-title>
+
+  <mat-divider inset></mat-divider>
+
+  <mat-card-content>
+    <!--Card of datos del bono-->
+    <td><mat-card class="example-card" flex flex-gt-xs="30">
+
+      <mat-card-header>
+        <mat-card-title>Datos del Bono</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="card-body">
+          <form class="example-form">
+
+            <!--inputs de valores-->
+            <table class="example-full-width" cellspacing="0"><tr>
+              <td><mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>V. Nominal</mat-label>
+                <input matInput formControlName="valorNominal">
+              </mat-form-field></td>
+              <td><mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>V. Comercial</mat-label>
+                <input matInput formControlName="valorComercial">
+              </mat-form-field></td>
+              <td><mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Fecha Emision</mat-label>
+                <input matInput formControlName="emissionDate">
+              </mat-form-field></td>
+            </tr></table>
+
+            <!--inputs de tiempos-->
+            <table class="example-full-width" cellspacing="0"><tr>
+              <td><mat-form-field class="example-full-width-3" appearance="fill">
+                <mat-label>Frec. Cupon</mat-label>
+                <input matInput formControlName="frecCupon">
+              </mat-form-field></td>
+              <td><mat-form-field class="example-full-width-3" appearance="fill">
+                <mat-label>T. Tasa Interes</mat-label>
+                <input matInput formControlName="tTasaInte">
+              </mat-form-field></td>
+              <td><mat-form-field class="example-full-width-3" appearance="fill">
+                <mat-label>Capitalizacion</mat-label>
+                <input matInput formControlName="capitalizacion">
+              </mat-form-field></td>
+            </tr></table>
+
+            <!--inputs de tasas-->
+            <table class="example-full-width" cellspacing="0"><tr>
+              <td><mat-form-field class="example-full-width-2" appearance="fill">
+                <mat-label>N° Años</mat-label>
+                <input matInput formControlName="nAnos">
+              </mat-form-field></td>
+              <td><mat-divider [vertical]="true"></mat-divider></td>
+              <td><mat-form-field class="example-full-width-2" appearance="fill">
+                <mat-label>T. Interes (%)</mat-label>
+                <input matInput formControlName="tInteres">
+              </mat-form-field></td>
+              <td><mat-form-field class="example-full-width-2" appearance="fill">
+                <mat-label>T. A. Desc. (%)</mat-label>
+                <input matInput formControlName="tADesc">
+              </mat-form-field></td>
+              <td><mat-form-field class="example-full-width-2" appearance="fill">
+                <mat-label>Imp. Renta (%)</mat-label>
+                <input matInput formControlName="ImpARent">
+              </mat-form-field></td>
+            </tr></table>
+          </form>
+
+        </div>
+      </mat-card-content>
+
+    </mat-card><td>
+
+    <mat-divider inset></mat-divider>
+
+    <!--Card of gastos/costes-->
+    <td><mat-card class="example-card" flex flex-gt-xs="30">
+
+      <mat-card-header>
+        <mat-card-title>Gastos/Costos</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="card-body">
+          <form class="example-form">
+
+            <table class="example-full-width" cellspacing="0"><tr>
+              <td><mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Prima (%)</mat-label>
+                <input matInput formControlName="prima">
+              </mat-form-field></td>
+              <td><mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Estructuracion (%)</mat-label>
+                <input matInput formControlName="estructu">
+              </mat-form-field></td>
+            </tr></table>
+
+            <table class="example-full-width" cellspacing="0"><tr>
+              <td><mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Colocacion (%)</mat-label>
+                <input matInput formControlName="coloca">
+              </mat-form-field></td>
+              <td><mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Flotacion (%)</mat-label>
+                <input matInput formControlName="flota">
+              </mat-form-field></td>
+            </tr></table>
+
+            <table class="example-full-width" cellspacing="0"><tr>
+              <td><mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>CAVALI (%)</mat-label>
+                <input matInput formControlName="cavali">
+              </mat-form-field></td>
+            </tr></table>
+
+          </form>
+        </div>
+      </mat-card-content>
+
+    </mat-card><td>
+
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-raised-button class="check-button">Calcular</button>
+  </mat-card-actions>
+
+</mat-card>

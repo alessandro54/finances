@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {FormBuilder, FormGroup, NgForm} from "@angular/forms";
-import {SolesBono} from "../model/solesBono";
+import {SolesBono} from "../../model/solesBono";
 import {MatDialog} from "@angular/material/dialog";
-import {solesBonosService} from "../service/solesBono.service";
+import {solesBonosService} from "../../service/solesBono.service";
 
 @Component({
   selector: 'app-leasing-aleman',
