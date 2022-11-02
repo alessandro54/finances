@@ -1,7 +1,13 @@
 .button{
   height: 100px;
 }
+*{
 
+}
+
+.login{
+  background: black;
+}
 
 .section-login{
   text-align: center;

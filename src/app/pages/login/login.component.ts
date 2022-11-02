@@ -11,7 +11,7 @@ import {UserService} from "../../services/user.service";
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  logo = "assets/logo_small.png"
+  logo = "assets/logo_leasing.png"
   public loginForm!: FormGroup;
   dataUser: User;
 
