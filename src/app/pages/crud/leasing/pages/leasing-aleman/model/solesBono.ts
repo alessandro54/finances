@@ -7,4 +7,11 @@ export class SolesBono {
   nBono: number = 0;
   tBono: number = 0;
   emissionDate: string = '';
+
+  precioVenta: number = 0;
+  porcentaje_CuotaI_inicial: number = 0;
+  valor_de_prestamo: number = 0;
+  frecuenta: String = '';
+  n_anios: number = 0;
+  n_periodos: number = 0;
 }
