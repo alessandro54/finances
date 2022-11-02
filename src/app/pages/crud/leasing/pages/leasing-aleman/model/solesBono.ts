@@ -11,7 +11,7 @@ export class SolesBono {
   precioVenta: number = 0;
   porcentaje_CuotaI_inicial: number = 0;
   valor_de_prestamo: number = 0;
-  frecuenta: String = '';
+  frecuencia: String = '';
   n_anios: number = 0;
   n_periodos: number = 0;
 }
