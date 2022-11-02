@@ -7,6 +7,8 @@
 
 .login{
   background: black;
+  color: white;
+  font-family: 'Quicksand',sans-serif;
 }
 
 .section-login{
