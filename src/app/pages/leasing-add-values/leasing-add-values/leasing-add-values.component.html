@@ -1,4 +1,4 @@
-
+<p>pendiente la funcion de guardar los datoss</p>
 <mat-card class="mat-parent">
 
   <mat-card-title>Bono Soles</mat-card-title>
@@ -6,12 +6,12 @@
   <mat-card-content>
 
     <div class="card-body">
-      <form class="example-form" [formGroup]="formValue">
+      <form class="example-form">
 
         <!--inputs de detalles-->
         <table class="example-full-width" cellspacing="0"><tr>
           <td><mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>Codigo</mat-label>
+            <mat-label>edicion</mat-label>
             <input matInput formControlName="idBono">
           </mat-form-field></td>
           <td><mat-form-field class="example-full-width-2" appearance="fill">
@@ -49,8 +49,7 @@
   </mat-card-content>
   <mat-divider inset></mat-divider>
   <mat-card-actions align="end">
-    <button mat-raised-button class="check-button"
-            (click)="createSolesBono()">Guardar</button>
+    <button mat-raised-button class="check-button">Guardar</button>
   </mat-card-actions>
 
 </mat-card>

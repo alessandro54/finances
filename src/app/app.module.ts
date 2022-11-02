@@ -32,10 +32,9 @@ import { BodyComponent } from './pages/body/body.component';
 import { HeaderComponent } from './pages/header/header.component';
 import { FooterComponent } from './pages/footer/footer.component';
 import { ContactUsComponent } from './pages/contact-us/contact-us.component';
-import { LeasingAlemanComponent } from './pages/crud/leasing/pages/leasing-aleman/pages/leasing-aleman/leasing-aleman.component';
-import { LeasingTableComponent } from './pages/crud/leasing/pages/leasing-table/page/leasing-table/leasing-table.component';
-import { LeasingAddValuesComponent } from './pages/crud/leasing/pages/leasing-add-values/leasing-add-values/leasing-add-values.component';
-import { LeasingDetailComponent } from './pages/crud/leasing/pages/leasing-detail-component/leasing-detail-component/leasing-detail.component';
+import { LeasingTableComponent } from './pages/crud/leasing-table/page/leasing-table/leasing-table.component';
+import { LeasingAddValuesComponent } from './pages/leasing-add-values/leasing-add-values/leasing-add-values.component';
+import { LeasingDetailComponent } from './pages/crud/leasing-detail-component/leasing-detail-component/leasing-detail.component';
 
 
 @NgModule({
@@ -47,7 +46,6 @@ import { LeasingDetailComponent } from './pages/crud/leasing/pages/leasing-detai
     HeaderComponent,
     FooterComponent,
     ContactUsComponent,
-    LeasingAlemanComponent,
     LeasingTableComponent,
     LeasingAddValuesComponent,
     LeasingDetailComponent,
