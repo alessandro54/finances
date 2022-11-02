@@ -20,24 +20,24 @@
   "leasing_dates": [
     {
       "id": 1,
-      "precio_venta": 1800000,
-      "%Cuota_Inicial": 20,
-      "Prestamo": 1440000,
-      "Frecuencia": "Semestral",
-      "Numero_Años": 4,
-      "Numero_Periodos": 8
+      "precioVenta": 1200000,
+      "porcentaje_Cuota_Inicial": 10,
+      "valor_de_prestamo": 11500000,
+      "frecuencia": "Semestral",
+      "n_anios": 9,
+      "n_periodos": 18
     },
     {
       "id": 2,
-      "precio_venta": 1600000,
-      "%Cuota_Inicial": 10,
-      "Prestamo": 1150000,
-      "Frecuencia": "Semestral",
-      "Numero_Años": 6,
-      "Numero_Periodos": 12
+      "precioVenta": 2200000,
+      "porcentaje_Cuota_Inicial": 15,
+      "valor_de_prestamo": 1200000,
+      "frecuencia": "Semestral",
+      "n_anios": 10,
+      "n_periodos": 20
     },
     {
-      "id": 5,
+      "id": 3,
       "precioVenta": 1600000,
       "porcentaje_Cuota_Inicial": 10,
       "valor_de_prestamo": 1150000,
