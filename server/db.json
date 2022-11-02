@@ -17,7 +17,7 @@
       "apiId": "v1"
     }
   ],
-  "leasing_Dates": [
+  "leasing_dates": [
     {
       "id": 1,
       "precio_venta": 1800000,
@@ -35,6 +35,16 @@
       "Frecuencia": "Semestral",
       "Numero_Años": 6,
       "Numero_Periodos": 12
+    },
+    {
+      "id": 5,
+      "precioVenta": 1600000,
+      "porcentaje_Cuota_Inicial": 10,
+      "valor_de_prestamo": 1150000,
+      "frecuencia": "Semestral",
+      "n_anios": 6,
+      "n_periodos": 12
     }
+
   ]
 }

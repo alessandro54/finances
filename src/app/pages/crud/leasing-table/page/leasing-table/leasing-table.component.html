@@ -24,42 +24,42 @@
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.id}} </td>
       </ng-container>
       <!-- ID Bono Column -->
-      <ng-container matColumnDef="idBono" >
+      <ng-container matColumnDef="IDoperacion" >
         <th mat-header-cell *matHeaderCellDef> ID Operacion </th>
-        <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.idBono}} </td>
+        <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.idleasing}} </td>
       </ng-container>
       <!-- Propietario Column -->
-      <ng-container matColumnDef="nameProprietaryBono" >
+      <ng-container matColumnDef="PrecioVenta" >
         <th mat-header-cell *matHeaderCellDef> Precio Venta </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.precioVenta}} </td>
       </ng-container>
 
       <!-- T. Bono Column -->
-      <ng-container matColumnDef="tipoBono">
+      <ng-container matColumnDef="%CutaInicial">
         <th mat-header-cell *matHeaderCellDef> % Cuota Inicial </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.porcentaje_Cuota_Inicial}} </td>
       </ng-container>
 
       <!-- V. Bono Column -->
-      <ng-container matColumnDef="valorBono">
+      <ng-container matColumnDef="Prestamo">
         <th mat-header-cell *matHeaderCellDef> Prestamo </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.valor_de_prestamo}} </td>
       </ng-container>
 
       <!-- N. Bonos Column -->
-      <ng-container matColumnDef="nBono">
+      <ng-container matColumnDef="Frecuencia">
         <th mat-header-cell *matHeaderCellDef> Frecuencia </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.frecuencia}} </td>
       </ng-container>
 
       <!-- Total (S/.) Column -->
-      <ng-container matColumnDef="tBono">
+      <ng-container matColumnDef="N°deAños">
         <th mat-header-cell *matHeaderCellDef> N° de Años </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.n_anios}} </td>
       </ng-container>
 
       <!-- Dia Emision Column -->
-      <ng-container matColumnDef="emissionDate">
+      <ng-container matColumnDef="N°Periiodos">
         <th mat-header-cell *matHeaderCellDef> N° Periodos </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.n_periodos}} </td>
       </ng-container>

@@ -10,7 +10,7 @@ import {SolesBono} from "../model/solesBono";
 })
 
 export class solesBonosService {
-  basePath = 'http://localhost:3000/solesBonos'
+  basePath = 'http://localhost:3000/leasing_dates'
 
   httpOptions = {
     headers: new HttpHeaders( {

@@ -19,8 +19,8 @@ class MatPaginator {
 export class LeasingTableComponent implements OnInit {
     dataSource: MatTableDataSource<any>;
   solesBonoData: SolesBono;
-  displayedColumnsSolesBonos: string[] = ['id', 'idBono', 'nameProprietaryBono', 'tipoBono',
-    'valorBono', 'nBono', 'tBono', 'emissionDate',
+  displayedColumnsSolesBonos: string[] = ['id', 'IDoperacion', 'PrecioVenta', '%CutaInicial',
+    'Prestamo', 'Frecuencia', 'N°deAños', 'N°Periiodos',
     'actions'];
 
   @ViewChild(MatPaginator, {static: true})

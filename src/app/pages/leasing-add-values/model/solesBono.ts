@@ -1,13 +1,6 @@
 export class SolesBono {
   id: number = 0;
-  idBono: number = 0;
-  nameProprietaryBono : string = '';
-  tipoBono : string = '';
-  valorBono: number = 0;
-  nBono: number = 0;
-  tBono: number = 0;
-  emissionDate: string = '';
-
+  idleasing: number = 0;
   precioVenta: number = 0;
   porcentaje_Cuota_Inicial: number = 0;
   valor_de_prestamo: number = 0;
