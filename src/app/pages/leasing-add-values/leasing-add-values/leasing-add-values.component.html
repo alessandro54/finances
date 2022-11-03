@@ -11,15 +11,15 @@
         <!--inputs de detalles-->
         <table class="example-full-width" cellspacing="0"><tr>
           <td><mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>edicion</mat-label>
+            <mat-label>ID_operación</mat-label>
             <input matInput formControlName="idBono">
           </mat-form-field></td>
           <td><mat-form-field class="example-full-width-2" appearance="fill">
-            <mat-label>Propietario</mat-label>
+            <mat-label>Precio venta</mat-label>
             <input matInput formControlName="nameProprietaryBono">
           </mat-form-field></td>
           <td><mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>T. Bono</mat-label>
+            <mat-label>% Cuota Inicial</mat-label>
             <input matInput formControlName="tipoBono">
           </mat-form-field></td>
         </tr></table>
@@ -27,11 +27,11 @@
         <!--inputs de montos-->
         <table class="example-full-width" cellspacing="0"><tr>
           <td><mat-form-field class="example-full-width-3" appearance="fill">
-            <mat-label>Bono U. (S/.)</mat-label>
+            <mat-label>Valor Prestamo</mat-label>
             <input matInput formControlName="valorBono">
           </mat-form-field></td>
           <td><mat-form-field class="example-full-width-2" appearance="fill">
-            <mat-label>N. Bonos</mat-label>
+            <mat-label>Frecuencia</mat-label>
             <input matInput formControlName="nBono">
           </mat-form-field></td>
         </tr></table>
@@ -39,7 +39,7 @@
         <!--inputs de fecha-->
         <table class="example-full-width" cellspacing="0"><tr>
           <td><mat-form-field class="example-full-width-2" appearance="fill">
-            <mat-label>F. Emision</mat-label>
+            <mat-label>Años</mat-label>
             <input matInput formControlName="emissionDate">
           </mat-form-field></td>
         </tr></table>
@@ -49,8 +49,9 @@
   </mat-card-content>
   <mat-divider inset></mat-divider>
   <mat-card-actions align="end">
-    <button mat-raised-button class="check-button">Guardar</button>
+    <button mat-raised-button class="check-button"
+            (click)="createSolesBono()">Guardar</button>
   </mat-card-actions>
-
+  //dont forget to put funcition to save dates in button
 </mat-card>
 
