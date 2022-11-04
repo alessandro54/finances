@@ -11,41 +11,48 @@ import {MatDialog} from "@angular/material/dialog";
   styleUrls: ['./leasing-add-values.component.css']
 })
 export class LeasingAddValuesComponent implements OnInit {
+
   dataSource: MatTableDataSource<any>;
   formValue !: FormGroup;
-  solesBonoModelObj: SolesBono = new SolesBono();
-  solesBonoData: SolesBono;
-  @ViewChild('solesBonoForm', {static: false})
-  solesBonoForm!: NgForm;
+
+  solesBonoModelObj:SolesBono = new SolesBono();
+  solesData: SolesBono;
+
+  @ViewChild('solesBonoForm',{static:false})
+  solesBonoForm!: NgForm
+
   constructor(private solesBonoService: solesBonosService, public dialog: MatDialog,
-              private formbuilder: FormBuilder) {
-    this.solesBonoData = {} as SolesBono;
+              private formBuilder: FormBuilder) {
+    this.solesData = {} as SolesBono;
     this.dataSource = new MatTableDataSource<any>();
   }
   ngOnInit(): void {
-    this.formValue = this.formbuilder.group({
+
+    this.formValue = this.formBuilder.group({
       idBono: [''],
       nameProprietaryBono: [''],
       tipoBono: [''],
       valorBono: [''],
       nBono: [''],
       emissionDate: [''],
-    });
+    })
   }
-  getAllSolesBonos() {
+
+  getAllSolesBonos(){
     this.solesBonoService.getAll().subscribe( (response: any) => {
       this.dataSource.data = response;
     });
   }
-  createSolesBono() {
-    this.solesBonoModelObj.id=this.formValue.value.idBono;
+
+  createSolesBono(){
+    this.solesBonoModelObj.idleasing = this.formValue.value.idBono;
     this.solesBonoModelObj.precioVenta=this.formValue.value.nameProprietaryBono;
     this.solesBonoModelObj.porcentaje_Cuota_Inicial=this.formValue.value.tipoBono;
     this.solesBonoModelObj.valor_de_prestamo=this.formValue.value.valorBono;
     this.solesBonoModelObj.frecuencia=this.formValue.value.nBono;
     this.solesBonoModelObj.n_anios=this.formValue.value.emissionDate;
 
-    this.solesBonoModelObj.n_periodos= this.solesBonoModelObj.n_anios*2;
+    this.solesBonoModelObj.n_periodos = this.solesBonoModelObj.n_anios * 2;
 
     this.solesBonoService.create(this.solesBonoModelObj).subscribe(response =>{
         console.log(response);
@@ -58,6 +65,6 @@ export class LeasingAddValuesComponent implements OnInit {
       err=> {
         alert('Something Went Wrong');
       })
-  };
+  }
 
 }
