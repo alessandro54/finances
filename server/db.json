@@ -9,11 +9,11 @@
       "apiId": "v1"
     },
     {
-      "name": "Fernando",
-      "lastName": "Aquino Iman",
-      "email": "Fernandorar65@gmail.com",
-      "password": "Mierdamierda123",
-      "id": 1,
+      "id": 2,
+      "name": "Alessandro",
+      "lastName": "Chumpitaz",
+      "email": "par_214@hotmail.com",
+      "password": "12345",
       "apiId": "v1"
     }
   ],
