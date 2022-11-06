@@ -33,7 +33,7 @@ import { HeaderComponent } from './pages/header/header.component';
 import { FooterComponent } from './pages/footer/footer.component';
 import { ContactUsComponent } from './pages/contact-us/contact-us.component';
 import { LeasingTableComponent } from './pages/crud/leasing-table/page/leasing-table/leasing-table.component';
-import { LeasingAddValuesComponent } from './pages/leasing-add-values/leasing-add-values/leasing-add-values.component';
+import { LeasingAddValuesComponent } from './pages/crud/leasing-add-values/leasing-add-values/leasing-add-values.component';
 import { LeasingDetailComponent } from './pages/crud/leasing-detail-component/leasing-detail-component/leasing-detail.component';
 
 

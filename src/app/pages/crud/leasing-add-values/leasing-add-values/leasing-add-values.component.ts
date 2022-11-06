@@ -52,7 +52,14 @@ export class LeasingAddValuesComponent implements OnInit {
     this.solesBonoModelObj.frecuencia=this.formValue.value.nBono;
     this.solesBonoModelObj.n_anios=this.formValue.value.emissionDate;
 
-    this.solesBonoModelObj.n_periodos = this.solesBonoModelObj.n_anios * 2;
+    if(this.solesBonoModelObj.frecuencia == "semestral"){
+      this.solesBonoModelObj.n_periodos = this.solesBonoModelObj.n_anios * 2;
+    }else if(this.solesBonoModelObj.frecuencia == "trimestral"){
+      this.solesBonoModelObj.n_periodos = this.solesBonoModelObj.n_anios * 3;
+    }else{
+      this.solesBonoModelObj.n_periodos = this.solesBonoModelObj.n_anios * 1;
+    }
+
 
     this.solesBonoService.create(this.solesBonoModelObj).subscribe(response =>{
         console.log(response);

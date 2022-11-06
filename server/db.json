@@ -50,11 +50,11 @@
       "id": 4,
       "idleasing": "12",
       "precioVenta": "12000",
-      "porcentaje_Cuota_Inicial": "12300",
-      "valor_de_prestamo": "12000",
+      "porcentaje_Cuota_Inicial": "12",
+      "valor_de_prestamo": "54000",
       "frecuencia": "semestral",
-      "n_anios": "12",
-      "n_periodos": 24
+      "n_anios": "40000",
+      "n_periodos": 80000
     }
   ],
   "solesAccounts": {

@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import {SolesBono} from "../../../../leasing-add-values/model/solesBono";
+import {SolesBono} from "../../../leasing-add-values/model/solesBono";
 import {MatDialog} from "@angular/material/dialog";
-import {solesBonosService} from "../../../../leasing-add-values/service/solesBono.service";
-import {LeasingAddValuesComponent} from "../../../../leasing-add-values/leasing-add-values/leasing-add-values.component";
+import {solesBonosService} from "../../../leasing-add-values/service/solesBono.service";
+import {LeasingAddValuesComponent} from "../../../leasing-add-values/leasing-add-values/leasing-add-values.component";
 import {
   LeasingDetailComponent
 } from "../../../leasing-detail-component/leasing-detail-component/leasing-detail.component";
