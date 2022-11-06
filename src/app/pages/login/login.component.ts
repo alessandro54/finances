@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
             alert("login successfully");
             this.loginForm.reset();
             this.userservice.CurrentdataUser=this.dataUser
-            this.router.navigate(['body'])
+            this.router.navigate(['dashboard'])
           }
           else{
             alert("User not found");
