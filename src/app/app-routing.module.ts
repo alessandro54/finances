@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RegisterComponent } from './pages/register/register.component';
 import { BodyComponent } from './pages/body/body.component';
 import { LeasingTableComponent } from './pages/crud/leasing-table/page/leasing-table/leasing-table.component';
+import {ContactUsComponent} from "./pages/contact-us/contact-us.component";
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: BodyComponent },
   { path: 'leasing-table', component: LeasingTableComponent },
+  {path: 'contactUs', component: ContactUsComponent}
 ];
 
 @NgModule({

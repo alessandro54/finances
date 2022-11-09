@@ -1,4 +1,3 @@
-<p>pendiente la funcion de guardar los datoss</p>
 <mat-card class="mat-typography">
 
   <mat-card-title>Leasing dates</mat-card-title>
@@ -11,36 +10,36 @@
         <!--inputs de detalles-->
         <table class="example-full-width" cellspacing="0"><tr>
           <td><mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>ID_operación</mat-label>
+            <mat-label>Operation ID</mat-label>
             <input matInput formControlName="idleasing">
           </mat-form-field></td>
           <td><mat-form-field class="example-full-width-2" appearance="fill">
-            <mat-label>Precio venta</mat-label>
-            <input matInput formControlName="precioventa">
+            <mat-label>Sale Price</mat-label>
+            <input matInput formControlName="price">
           </mat-form-field></td>
           <td><mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>% Cuota Inicial</mat-label>
-            <input matInput formControlName="porcentaje_cuota_inicial">
+            <mat-label>% Initial Quota</mat-label>
+            <input matInput formControlName="initial_quota_percentage">
           </mat-form-field></td>
         </tr></table>
 
         <!--inputs de montos-->
         <table class="example-full-width" cellspacing="0"><tr>
           <td><mat-form-field class="example-full-width-3" appearance="fill">
-            <mat-label>Valor Prestamo</mat-label>
-            <input matInput formControlName="valor_de_prestamo">
+            <mat-label>Loan Value</mat-label>
+            <input matInput formControlName="loan_value">
           </mat-form-field></td>
           <td><mat-form-field class="example-full-width-2" appearance="fill">
-            <mat-label>Frecuencia</mat-label>
-            <input matInput formControlName="frecuencia">
+            <mat-label>Frequency</mat-label>
+            <input matInput formControlName="frequency">
           </mat-form-field></td>
         </tr></table>
 
         <!--inputs de fecha-->
         <table class="example-full-width" cellspacing="0"><tr>
           <td><mat-form-field class="example-full-width-2" appearance="fill">
-            <mat-label>Años</mat-label>
-            <input matInput formControlName="n_anios">
+            <mat-label>Yeats</mat-label>
+            <input matInput formControlName="n_years">
           </mat-form-field></td>
         </tr></table>
       </form>
@@ -50,8 +49,7 @@
   <mat-divider inset></mat-divider>
   <mat-card-actions align="end">
     <button mat-raised-button class="check-button"
-            (click)="createSolesBono()">Guardar</button>
+            (click)="createSolesBono()">Save</button>
   </mat-card-actions>
-  //dont forget to put funcition to save dates in button
 </mat-card>
 

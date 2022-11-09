@@ -53,16 +53,6 @@
       "frecuencia": "Semestral",
       "n_anios": 6,
       "n_periodos": 12
-    },
-    {
-      "id": 4,
-      "idleasing": "3",
-      "precioVenta": "32",
-      "porcentaje_Cuota_Inicial": "21",
-      "valor_de_prestamo": "3200",
-      "frecuencia": "semestral",
-      "n_anios": "12",
-      "n_periodos": 24
     }
   ],
   "solesAccounts": {
