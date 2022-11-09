@@ -6,13 +6,13 @@
 
     <button mat-raised-button (click)="openDialogAddBono()"
             class="demo-button" data-bs-toggle="modal"
-            data-bs-target="#addBill"> Calcular </button>
+            data-bs-target="#addBill"> Calculate </button>
     <button mat-raised-button (click)="openDialogDetailBono()"
             class="demo-button" data-bs-toggle="modal"
-            data-bs-target="#addBill"> Detalles </button>
+            data-bs-target="#addBill"> Details </button>
     <button mat-raised-button (click)="openDialogSaveBono()"
             class="demo-button" data-bs-toggle="modal"
-            data-bs-target="#addBill"> Agregar </button>
+            data-bs-target="#addBill"> Add </button>
 
   </div>
 
@@ -26,41 +26,41 @@
       <!-- ID Bono Column -->
       <ng-container matColumnDef="IDoperacion" >
         <th mat-header-cell *matHeaderCellDef> ID Operacion </th>
-        <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.leasingID}} </td>
+        <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.id}} </td>
       </ng-container>
       <!-- Propietario Column -->
       <ng-container matColumnDef="PrecioVenta" >
-        <th mat-header-cell *matHeaderCellDef> Precio Venta </th>
+        <th mat-header-cell *matHeaderCellDef> Sale Price </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.precioVenta}} </td>
       </ng-container>
 
       <!-- T. Bono Column -->
       <ng-container matColumnDef="%CutaInicial">
-        <th mat-header-cell *matHeaderCellDef> % Cuota Inicial </th>
+        <th mat-header-cell *matHeaderCellDef> % Initial Quota </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.porcentaje_Cuota_Inicial}} </td>
       </ng-container>
 
       <!-- V. Bono Column -->
       <ng-container matColumnDef="Prestamo">
-        <th mat-header-cell *matHeaderCellDef> Prestamo </th>
+        <th mat-header-cell *matHeaderCellDef> Loand Value </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.valor_de_prestamo}} </td>
       </ng-container>
 
       <!-- N. Bonos Column -->
       <ng-container matColumnDef="Frecuencia">
-        <th mat-header-cell *matHeaderCellDef> Frecuencia </th>
+        <th mat-header-cell *matHeaderCellDef> Frequency </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.frecuencia}} </td>
       </ng-container>
 
       <!-- Total (S/.) Column -->
       <ng-container matColumnDef="N°deAños">
-        <th mat-header-cell *matHeaderCellDef> N° de Años </th>
+        <th mat-header-cell *matHeaderCellDef> N° Years </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.n_anios}} </td>
       </ng-container>
 
       <!-- Dia Emision Column -->
       <ng-container matColumnDef="N°Periiodos">
-        <th mat-header-cell *matHeaderCellDef> N° Periodos </th>
+        <th mat-header-cell *matHeaderCellDef> N° Periods </th>
         <td mat-cell *matCellDef="let elementSolesBono"> {{elementSolesBono.n_periodos}} </td>
       </ng-container>
 
