@@ -2,7 +2,7 @@ import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import {Injectable} from "@angular/core";
-import {SolesBono} from "../model/solesBono";
+import {leasing_Dates} from "../model/leasing_Dates";
 
 
 @Injectable({
@@ -20,29 +20,29 @@ export class solesBonosService {
 
   constructor(private http:HttpClient) { }
 
-  getAll(): Observable<SolesBono> {
-    return this.http.get<SolesBono>(this.basePath, this.httpOptions)
+  getAll(): Observable<leasing_Dates> {
+    return this.http.get<leasing_Dates>(this.basePath, this.httpOptions)
       .pipe(
         retry(2),
         catchError(this.handleError));
   }
 
-  getSolesAccount(id: number): Observable<SolesBono> {
-    return this.http.get<SolesBono>(`${this.basePath}/${id}`)
+  getSolesAccount(id: number): Observable<leasing_Dates> {
+    return this.http.get<leasing_Dates>(`${this.basePath}/${id}`)
       .pipe(
         retry(2),
         catchError(this.handleError));
   }
 
-  create(item: any): Observable<SolesBono> {
-    return this.http.post<SolesBono>(this.basePath, JSON.stringify(item), this.httpOptions)
+  create(item: any): Observable<leasing_Dates> {
+    return this.http.post<leasing_Dates>(this.basePath, JSON.stringify(item), this.httpOptions)
       .pipe(
         retry(2),
         catchError(this.handleError));
   }
 
-  update(item: any, id: number): Observable<SolesBono> {
-    return this.http.put<SolesBono>(`${this.basePath}/${id}`, JSON.stringify(item), this.httpOptions)
+  update(item: any, id: number): Observable<leasing_Dates> {
+    return this.http.put<leasing_Dates>(`${this.basePath}/${id}`, JSON.stringify(item), this.httpOptions)
       .pipe(
         retry(2),
         catchError(this.handleError));

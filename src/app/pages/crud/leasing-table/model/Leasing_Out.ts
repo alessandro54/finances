@@ -1,4 +1,6 @@
-export class leasingDates {
+//change to leasing out
+
+export class Leasing_Out {
   id: number = 0;
   nameProprietary : string = '';
   valorNominal: number = 0;

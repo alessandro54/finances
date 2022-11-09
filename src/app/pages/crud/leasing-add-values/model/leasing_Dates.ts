@@ -1,4 +1,4 @@
-export class SolesBono {
+export class leasing_Dates {
   id: number = 0;
   idleasing: number = 0;
   precioVenta: number = 0;

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {FormBuilder, FormGroup, NgForm} from "@angular/forms";
-import {SolesBono} from "../model/solesBono";
+import {leasing_Dates} from "../model/leasing_Dates";
 import {solesBonosService} from "../service/solesBono.service";
 import {MatDialog} from "@angular/material/dialog";
 
@@ -15,15 +15,15 @@ export class LeasingAddValuesComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   formValue !: FormGroup;
 
-  solesBonoModelObj:SolesBono = new SolesBono();
-  solesData: SolesBono;
+  solesBonoModelObj:leasing_Dates = new leasing_Dates();
+  solesData: leasing_Dates;
 
   @ViewChild('solesBonoForm',{static:false})
   solesBonoForm!: NgForm
 
   constructor(private solesBonoService: solesBonosService, public dialog: MatDialog,
               private formBuilder: FormBuilder) {
-    this.solesData = {} as SolesBono;
+    this.solesData = {} as leasing_Dates;
     this.dataSource = new MatTableDataSource<any>();
   }
   ngOnInit(): void {

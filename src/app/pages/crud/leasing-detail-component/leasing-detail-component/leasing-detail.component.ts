@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, NgForm} from "@angular/forms";
 import {MatTableDataSource} from "@angular/material/table";
-import {leasingDates} from "../../leasing-table/model/leasingdates";
+import {Leasing_Out} from "../../leasing-table/model/Leasing_Out";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatDialog} from "@angular/material/dialog";
 import {leasingDetailService} from "../service/leasingDetailService";
@@ -16,7 +16,7 @@ export class LeasingDetailComponent implements OnInit {
 
   dataSource: MatTableDataSource<any>;
   formValue !: FormGroup;
-  solesAccountModelObj: leasingDates = new leasingDates();
+  solesAccountModelObj: Leasing_Out = new Leasing_Out();
   displayedColumnsSolesAccount: string[] = ['id', 'nameProprietary', 'valorNominal', 'nAnos',
     'tTasaInte', 'tInteres', 'emissionDate'];
 
@@ -47,7 +47,7 @@ export class LeasingDetailComponent implements OnInit {
     'tceaEmisorAmericano', 'tceaEscudoAmericano', 'treaBonistaAmericano', 'duracAmericano',
     'convexAmericano', 'totalRatioAmericano','duracModifAmericano'];
 
-  leasingDatesData: leasingDates;
+  leasingDatesData: Leasing_Out;
 
   @ViewChild(MatPaginator, {static: true})
   paginator!: MatPaginator;
@@ -56,7 +56,7 @@ export class LeasingDetailComponent implements OnInit {
   solesAccountForm!: NgForm;
 
   constructor(private leasingDetailService: leasingDetailService, public dialog: MatDialog) {
-    this.leasingDatesData = {} as leasingDates;
+    this.leasingDatesData = {} as Leasing_Out;
     this.dataSource = new MatTableDataSource<any>();
     this.dataSourceInfo1 = new MatTableDataSource<any>();
     this.dataSourceInfo2 = new MatTableDataSource<any>();
