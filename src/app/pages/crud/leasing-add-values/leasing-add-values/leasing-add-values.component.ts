@@ -29,13 +29,13 @@ export class LeasingAddValuesComponent implements OnInit {
   ngOnInit(): void {
 
     this.formValue = this.formBuilder.group({
-      idBono: [''],
-      nameProprietaryBono: [''],
-      tipoBono: [''],
-      valorBono: [''],
-      nBono: [''],
-      emissionDate: [''],
-    })
+      idleasing: [''],
+      precioventa: [''],
+      porcentaje_cuota_inicial: [''],
+      valor_de_prestamo: [''],
+      frecuencia: [''],
+      n_anios: [''],
+    });
   }
 
   getAllSolesBonos(){
@@ -45,12 +45,12 @@ export class LeasingAddValuesComponent implements OnInit {
   }
 
   createSolesBono(){
-    this.solesBonoModelObj.idleasing = this.formValue.value.idBono;
-    this.solesBonoModelObj.precioVenta=this.formValue.value.nameProprietaryBono;
-    this.solesBonoModelObj.porcentaje_Cuota_Inicial=this.formValue.value.tipoBono;
-    this.solesBonoModelObj.valor_de_prestamo=this.formValue.value.valorBono;
-    this.solesBonoModelObj.frecuencia=this.formValue.value.nBono;
-    this.solesBonoModelObj.n_anios=this.formValue.value.emissionDate;
+    this.solesBonoModelObj.idleasing = this.formValue.value.idleasing;
+    this.solesBonoModelObj.precioVenta=this.formValue.value.precioventa;
+    this.solesBonoModelObj.porcentaje_Cuota_Inicial=this.formValue.value.porcentaje_cuota_inicial;
+    this.solesBonoModelObj.valor_de_prestamo=this.formValue.value.valor_de_prestamo;
+    this.solesBonoModelObj.frecuencia=this.formValue.value.frecuencia;
+    this.solesBonoModelObj.n_anios=this.formValue.value.n_anios;
 
     if(this.solesBonoModelObj.frecuencia == "semestral"){
       this.solesBonoModelObj.n_periodos = this.solesBonoModelObj.n_anios * 2;

@@ -15,6 +15,14 @@
       "email": "par_214@hotmail.com",
       "password": "12345",
       "apiId": "v1"
+    },
+    {
+      "name": "Fernando",
+      "lastName": "Aquino",
+      "email": "Fernandorar65@gmail.com",
+      "password": "Mierdamierda123",
+      "id": 3,
+      "apiId": "v1"
     }
   ],
   "leasing_dates": [
@@ -48,13 +56,13 @@
     },
     {
       "id": 4,
-      "idleasing": "12",
-      "precioVenta": "12000",
-      "porcentaje_Cuota_Inicial": "12",
-      "valor_de_prestamo": "54000",
+      "idleasing": "3",
+      "precioVenta": "32",
+      "porcentaje_Cuota_Inicial": "21",
+      "valor_de_prestamo": "3200",
       "frecuencia": "semestral",
-      "n_anios": "40000",
-      "n_periodos": 80000
+      "n_anios": "12",
+      "n_periodos": 24
     }
   ],
   "solesAccounts": {
