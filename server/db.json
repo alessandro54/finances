@@ -46,13 +46,13 @@
     },
     {
       "id": 3,
-      "precioVenta": 1600000,
-      "idleasing": 3,
-      "porcentaje_Cuota_Inicial": 10,
-      "valor_de_prestamo": 1150000,
-      "frecuencia": "Semestral",
-      "n_anios": 6,
-      "n_periodos": 12
+      "idleasing": "1",
+      "precioVenta": "12000",
+      "porcentaje_Cuota_Inicial": "12%",
+      "valor_de_prestamo": "4500",
+      "frecuencia": "semestral",
+      "n_anios": "12",
+      "n_periodos": 24
     }
   ],
   "solesAccounts": {

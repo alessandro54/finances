@@ -33,16 +33,16 @@ export class LeasingTableComponent implements OnInit {
 
   ngOnInit(): void {
     // this.dataSource.paginator = this.paginator; //corregir el paginator por alguna razon no funciona
-    this.getAllSolesBonos();
+    this.getAllLeasings();
   }
 
-  getAllSolesBonos() {
+  getAllLeasings() {
     this.solesBonoService.getAll().subscribe( (response: any) => {
       this.dataSource.data = response;
     });
   }
 
-  openDialogAddBono() {
+  openDialogAddLeasing() {
     const dialogRef = this.dialog.open(LeasingAddValuesComponent);
 
     dialogRef.afterClosed().subscribe(result => {
@@ -50,7 +50,7 @@ export class LeasingTableComponent implements OnInit {
     });
   }
 
-  openDialogDetailBono() {
+  openDialogDetailLeasing() {
     const dialogRef = this.dialog.open(LeasingDetailComponent, {
       height: '95%',
       width: '100%'
@@ -61,7 +61,7 @@ export class LeasingTableComponent implements OnInit {
     });
   }
 
-  openDialogSaveBono() {
+  openDialogSaveLeasing() {
     const dialogRef = this.dialog.open(LeasingAddValuesComponent);
 
     dialogRef.afterClosed().subscribe(result => {
