@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import {leasing_Dates} from "../../../leasing-add-values/model/leasing_Dates";
 import {MatDialog} from "@angular/material/dialog";
-import {solesBonosService} from "../../../leasing-add-values/service/solesBono.service";
+import {leasingAddServices} from "../../../leasing-add-values/service/leasingAddService";
 import {LeasingAddValuesComponent} from "../../../leasing-add-values/leasing-add-values/leasing-add-values.component";
 import {
   LeasingDetailComponent
@@ -26,7 +26,7 @@ export class LeasingTableComponent implements OnInit {
   @ViewChild(MatPaginator, {static: true})
   paginator!: MatPaginator;
 
-  constructor(private solesBonoService: solesBonosService, public dialog: MatDialog) {
+  constructor(private leasingaddservices: leasingAddServices, public dialog: MatDialog) {
     this.solesBonoData = {} as leasing_Dates;
     this.dataSource = new MatTableDataSource<any>();
   }
@@ -37,7 +37,7 @@ export class LeasingTableComponent implements OnInit {
   }
 
   getAllLeasings() {
-    this.solesBonoService.getAll().subscribe( (response: any) => {
+    this.leasingaddservices.getAll().subscribe( (response: any) => {
       this.dataSource.data = response;
     });
   }
@@ -69,7 +69,7 @@ export class LeasingTableComponent implements OnInit {
     });
   }
   deleteItem(id: number) {
-    this.solesBonoService.delete(id).subscribe((response: any) => {
+    this.leasingaddservices.delete(id).subscribe((response: any) => {
       this.dataSource.data = this.dataSource.data.filter((o: leasing_Dates) => {
         return o.id !== id ? o : false;
       });

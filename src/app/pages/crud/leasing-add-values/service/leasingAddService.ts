@@ -9,7 +9,7 @@ import {leasing_Dates} from "../model/leasing_Dates";
   providedIn: 'root'
 })
 
-export class solesBonosService {
+export class leasingAddServices {
   basePath = 'http://localhost:3000/leasing_dates'
 
   httpOptions = {
@@ -27,7 +27,7 @@ export class solesBonosService {
         catchError(this.handleError));
   }
 
-  getSolesAccount(id: number): Observable<leasing_Dates> {
+  getLeasingAcount(id: number): Observable<leasing_Dates> {
     return this.http.get<leasing_Dates>(`${this.basePath}/${id}`)
       .pipe(
         retry(2),

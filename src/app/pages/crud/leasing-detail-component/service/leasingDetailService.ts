@@ -10,7 +10,7 @@ import {Leasing_Out} from "../../leasing-table/model/Leasing_Out";
 })
 
 export class leasingDetailService{
-  basePath = 'http://localhost:3000/solesAccounts'
+  basePath = 'http://localhost:3000/leasingOut'
 
   httpOptions = {
     headers: new HttpHeaders( {
