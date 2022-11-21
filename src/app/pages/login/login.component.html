@@ -1,28 +1,25 @@
-<section class="section-login">
-
-  <div class="login-wrapper">
-    <mat-card class="box">
-      <div class="login">
+<section class="section-login flex justify-center items-center bg-gray-300 h-[100vh]">
+  <div class="login-wrapper w-[400px] lg:w-1/4">
+    <mat-card class="box rounded-xl">
+      <div class="login bg-black rounded-lg mb-8">
         <img [src]="logo" alt="" width="80%" height="100%">
-        <h3>Login</h3>
       </div>
-
       <form [formGroup]="loginForm" class="example-form" (ngSubmit)="login()">
         <mat-card-content>
-
-          <mat-form-field class="example-full-width">
-            <input [formControlName]="'email'" matInput placeholder="Correo" autocomplete="off">
-          </mat-form-field>
-
-          <mat-form-field class="example-full-width">
-            <input [formControlName]="'password'" matInput placeholder="Password" autocomplete="off"  [type]="show ? 'text' : 'password'" >
-
-          </mat-form-field>
-
+          <div class="flex flex-col justify-center px-2">
+            <mat-form-field class="example-full-width">
+              <input i18n [formControlName]="'email'" matInput placeholder="Usuario" autocomplete="off">
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+              <input [formControlName]="'password'" matInput placeholder="Contraseña" autocomplete="off"
+                     [type]="show ? 'text' : 'password'">
+            </mat-form-field>
+          </div>
         </mat-card-content>
-
-        <button mat-raised-button color="primary" class="btn-block" type="submit">&nbsp;Log in&nbsp;</button>&nbsp;
-        <button mat-raised-button color="primary" class="btn-block" [routerLink]="'/register'">Sign up</button>
+        <div class="flex items-center justify-center">
+          <button mat-raised-button color="primary" class="btn-block" type="submit">&nbsp;Ingresar&nbsp;</button>&nbsp;
+          <button mat-raised-button color="primary" class="btn-block" [routerLink]="'/register'">Registrarse</button>
+        </div>
       </form>
     </mat-card>
   </div>

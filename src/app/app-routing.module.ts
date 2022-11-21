@@ -6,12 +6,13 @@ import { RegisterComponent } from './pages/register/register.component';
 import { BodyComponent } from './pages/body/body.component';
 import { LeasingTableComponent } from './pages/crud/leasing-table/page/leasing-table/leasing-table.component';
 import {ContactUsComponent} from "./pages/contact-us/contact-us.component";
+import { AuthGuardService } from './auth/auth-guard-service';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'dashboard', component: BodyComponent },
+  { path: 'dashboard', component: BodyComponent, canActivate: [AuthGuardService] },
   { path: 'leasing-table', component: LeasingTableComponent },
   {path: 'contactUs', component: ContactUsComponent}
 ];

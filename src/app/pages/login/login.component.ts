@@ -1,25 +1,29 @@
-import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {User} from "../../model/User";
-import {Router} from "@angular/router";
-import {HttpClient} from "@angular/common/http";
-import {UserService} from "../../services/user.service";
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {User} from '../../model/User';
+import {Router} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
+import {UserService} from '../../services/user.service';
+import {AuthService} from '../../services/auth.service';
+import {CookieService} from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  logo = "assets/logo_leasing.png"
+  logo = 'assets/logo_leasing.png';
   public loginForm!: FormGroup;
-  dataUser: User;
 
   show: boolean = false;
 
-  constructor(private formBuilder: FormBuilder, private http: HttpClient,
-              private router: Router, private userservice: UserService) {
-    this.dataUser = {} as User;
+  constructor(
+    private formBuilder: FormBuilder,
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService,
+    private cookieService: CookieService
+  ) {
   }
 
   password() {
@@ -28,30 +32,16 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
-      email: [''],
-      password: ['']
-    })
+      email: ['', Validators.required],
+      password: ['', Validators.required],
+    });
   }
 
-  login(){
-    this.http.get<any>("http://localhost:3000/user")
-      .subscribe(res=>{
-          const user =res.find((a:any)=>{
-            this.dataUser=a;
-            return a.email===this.loginForm.value.email&&a.password===this.loginForm.value.password
-          });
-          if(user){
-            alert("login successfully");
-            this.loginForm.reset();
-            this.userservice.CurrentdataUser=this.dataUser
-            this.router.navigate(['dashboard'])
-          }
-          else{
-            alert("User not found");
-          }
-        },
-        err=>{
-          alert("something went wrong");
-        })
+  login() {
+    const {email, password} = this.loginForm.value;
+    this.authService.login(email, password).subscribe((res) => {
+      this.cookieService.set('SESSIONID', res.token);
+      this.router.navigate(['/dashboard']);
+    });
   }
 }
