@@ -18,19 +18,21 @@ export class LeasingDetailComponent implements OnInit {
 
   leasingDataGet: leasing_Dates;
 
-
   dataSource: MatTableDataSource<any>;
   formValue !: FormGroup;
-  solesAccountModelObj: Leasing_Out = new Leasing_Out();
-  displayedColumnsLeasingAccount: string[] = ['id', 'Sale Price', '% Initial Quota', 'Loand Value',
-    'Frequency', 'N° Years', 'N° Periods'];
+  leasingAccountModelObj: Leasing_Out = new Leasing_Out();
+  displayedColumnsLeasingAccount: string[] = ['id', 'Sale_Price', '%_Initial_Quota', 'Loand_Value',
+    'Frequency', 'N°_Years', 'N°_Periods'];
+
+
+
 
   dataSourceInfo1: MatTableDataSource<any>;
   displayedColumnsLeasingAccountInfo1: string[] = ['pV', 'Pci','Na','Frec',
     'NDxA', 'CNot', 'CReg','Tas','ComAct','ComPer','PortesPer','GasAdmPer','pSegDes','pSegRie','COK'];
 
   dataSourceResults: MatTableDataSource<any>;
-  displayedColumnsLeasingAccountResults: string[] = ['NC', 'TEA','TEP',
+  displayedColumnsLeasingAccountResults: string[] = ['id','NC', 'TEA','TEP',
     'IA', 'IP', 'PG', 'SI', 'SII','I','Cuota','A','PP','SegDes','SegRie','Portes','GasAdm','SF','Flujo'];
 
 
@@ -39,8 +41,8 @@ export class LeasingDetailComponent implements OnInit {
   @ViewChild(MatPaginator, {static: true})
   paginator!: MatPaginator;
 
-  @ViewChild('solesAccountForm', {static: false})
-  solesAccountForm!: NgForm;
+  @ViewChild('leasingAccountForm', {static: false})
+  leasingAccountForm!: NgForm;
 
   constructor(private leasingaddservices: leasingAddServices, public dialog: MatDialog) {
     this.leasingDatesData = {} as Leasing_Out;
