@@ -2,11 +2,12 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import {leasing_Dates} from "../../../leasing-add-values/model/leasing_Dates";
 import {MatDialog} from "@angular/material/dialog";
-import {leasingAddServices} from "../../../leasing-add-values/service/leasingAddService";
+
 import {LeasingAddValuesComponent} from "../../../leasing-add-values/leasing-add-values/leasing-add-values.component";
 import {
   LeasingDetailComponent
 } from "../../../leasing-detail-component/leasing-detail-component/leasing-detail.component";
+import {leasingAddServices} from "../../../leasing-add-values/service/leasingAddService";
 
 class MatPaginator {
 }
@@ -17,8 +18,9 @@ class MatPaginator {
   styleUrls: ['./leasing-table.component.css']
 })
 export class LeasingTableComponent implements OnInit {
-    dataSource: MatTableDataSource<any>;
-  solesBonoData: leasing_Dates;
+  dataSource: MatTableDataSource<any>;
+  leasingDataGet: leasing_Dates;
+  leasingData: leasing_Dates;
   displayedColumnsSolesBonos: string[] = ['id', 'IDoperacion', 'PrecioVenta', '%CutaInicial',
     'Prestamo', 'Frecuencia', 'N°deAños', 'N°Periiodos',
     'actions'];
@@ -27,19 +29,14 @@ export class LeasingTableComponent implements OnInit {
   paginator!: MatPaginator;
 
   constructor(private leasingaddservices: leasingAddServices, public dialog: MatDialog) {
-    this.solesBonoData = {} as leasing_Dates;
+    this.leasingData = {} as leasing_Dates;
     this.dataSource = new MatTableDataSource<any>();
+    this.leasingDataGet = new leasing_Dates();
   }
 
   ngOnInit(): void {
     // this.dataSource.paginator = this.paginator; //corregir el paginator por alguna razon no funciona
     this.getAllLeasings();
-  }
-
-  getAllLeasings() {
-    this.leasingaddservices.getAll().subscribe( (response: any) => {
-      this.dataSource.data = response;
-    });
   }
 
   openDialogAddLeasing() {
@@ -75,6 +72,16 @@ export class LeasingTableComponent implements OnInit {
       });
     });
     console.log(this.dataSource.data);
+  }
+  getLeasingById(id: number){
+    this.leasingaddservices.getLeasingAcount(id).subscribe((response: any) =>{
+      this.leasingDataGet = response;
+    });
+  }
+  getAllLeasings() {
+    this.leasingaddservices.getAll().subscribe( (response: any) => {
+      this.dataSource.data = response;
+    });
   }
 
 }

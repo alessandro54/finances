@@ -1,1 +1,171 @@
-<h3>Details is wotking</h3>
+<mat-tab-group mat-align-tabs="center">
+
+  <mat-tab label = "Datos">
+    <!-- tabala de datos iniciales -->
+    <section class="example-container mat-elevation-z8" tabindex="0">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id" sticky >
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.id}} </td>
+        </ng-container>
+        <!-- precio columna-->
+        <ng-container matColumnDef="Sale_Price" >
+          <th mat-header-cell *matHeaderCellDef> Price </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.precioVenta}} </td>
+        </ng-container>
+        <!-- intial quota -->
+        <ng-container matColumnDef="%_Initial_Quota" >
+          <th mat-header-cell *matHeaderCellDef> Initial Quota </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.porcentaje_Cuota_Inicial}} </td>
+        </ng-container>
+        <!-- Loan Value -->
+        <ng-container matColumnDef="Loand_Value">
+          <th mat-header-cell *matHeaderCellDef> Loan Value </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.valor_de_prestamo}} </td>
+        </ng-container>
+
+        <!-- frecquency -->
+
+        <ng-container matColumnDef="Frequency">
+          <th mat-header-cell *matHeaderCellDef> Frequency </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.frecuencia}} </td>
+        </ng-container>
+        <!-- N-Anios -->
+        <ng-container matColumnDef="N°_Years">
+          <th mat-header-cell *matHeaderCellDef> N Years </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.n_anios}} </td>
+        </ng-container>
+        <!-- n_periodos -->
+        <ng-container matColumnDef="N°_Periods">
+          <th mat-header-cell *matHeaderCellDef> Periodos </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.n_periodos}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsLeasingAccount"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsLeasingAccount"></tr>
+      </table>
+    </section>
+  </mat-tab>
+
+
+
+
+
+  <mat-tab label = "Results">
+    <section class="example-container mat-elevation-z8" tabindex="0">
+      <table mat-table [dataSource]="dataSourceResults" class="mat-elevation-z8">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id" sticky >
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.ID}} </td>
+        </ng-container>
+        <!-- valorNominal Column -->
+        <ng-container matColumnDef="NC" >
+          <th mat-header-cell *matHeaderCellDef> NC </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.NC}} </td>
+        </ng-container>
+        <!-- valorComercial Column -->
+        <ng-container matColumnDef="TEA" >
+          <th mat-header-cell *matHeaderCellDef> TEA </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.TEA}} </td>
+        </ng-container>
+        <!-- N° Años Column -->
+        <ng-container matColumnDef="TEP">
+          <th mat-header-cell *matHeaderCellDef> TEP </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.TEP}} </td>
+        </ng-container>
+
+        <!-- frecCupon Column -->
+        <ng-container matColumnDef="IA">
+          <th mat-header-cell *matHeaderCellDef> IA </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.IA}} </td>
+        </ng-container>
+        <!-- tTasaInte Column -->
+        <ng-container matColumnDef="IP">
+          <th mat-header-cell *matHeaderCellDef> IP </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.IP}} </td>
+        </ng-container>
+        <!-- capitalizacion Column -->
+        <ng-container matColumnDef="PG">
+          <th mat-header-cell *matHeaderCellDef> PG </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.PG}} </td>
+        </ng-container>
+        <!-- emissionDate Column -->
+        <ng-container matColumnDef="SI">
+          <th mat-header-cell *matHeaderCellDef> SI </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.SI}} </td>
+        </ng-container>
+
+        <!-- emissionDate Column -->
+        <ng-container matColumnDef="SII">
+          <th mat-header-cell *matHeaderCellDef> SII </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.SII}} </td>
+        </ng-container>
+
+        <!-- emissionDate Column -->
+        <ng-container matColumnDef="I">
+          <th mat-header-cell *matHeaderCellDef> I </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.I}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Cuota">
+          <th mat-header-cell *matHeaderCellDef> CUOTA </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.CUOTA}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="A">
+          <th mat-header-cell *matHeaderCellDef> A </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.A}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="PP">
+          <th mat-header-cell *matHeaderCellDef> PP </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.PP}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="SegDes">
+          <th mat-header-cell *matHeaderCellDef> SegDes </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.SegDes}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="SegRie">
+          <th mat-header-cell *matHeaderCellDef> SegRie </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.SegRie}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Comision">
+          <th mat-header-cell *matHeaderCellDef> Comision </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.Comision}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Portes">
+          <th mat-header-cell *matHeaderCellDef> Portes </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.Portes}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="GasAdm">
+          <th mat-header-cell *matHeaderCellDef> GasAdm </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.GasAdm}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="SF">
+          <th mat-header-cell *matHeaderCellDef> SF </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.SF}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Flujo">
+          <th mat-header-cell *matHeaderCellDef> Flujo </th>
+          <td mat-cell *matCellDef="let elementSolesAccountInfo"> {{elementSolesAccountInfo.Flujo}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsLeasingAccountResults"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsLeasingAccountResults"></tr>
+      </table>
+    </section>
+
+    <mat-paginator [pageSizeOptions]="[3, 6, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+  </mat-tab>
+
+
+</mat-tab-group>
+

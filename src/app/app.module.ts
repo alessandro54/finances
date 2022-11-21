@@ -38,6 +38,8 @@ import { LeasingDetailComponent } from './pages/crud/leasing-detail-component/le
 import { JwtHelperService, JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthGuardService } from './auth/auth-guard-service';
+import {checkBudgets} from "@angular-devkit/build-angular/src/utils/bundle-calculator";
+
 
 @NgModule({
   declarations: [

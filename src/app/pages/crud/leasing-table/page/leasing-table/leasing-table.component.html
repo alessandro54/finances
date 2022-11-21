@@ -4,9 +4,6 @@
 
   <div class="demo-button-container" align="end">
 
-    <button mat-raised-button (click)="openDialogAddLeasing()"
-            class="demo-button" data-bs-toggle="modal"
-            data-bs-target="#addBill"> Calculate </button>
     <button mat-raised-button (click)="openDialogDetailLeasing()"
             class="demo-button" data-bs-toggle="modal"
             data-bs-target="#addBill"> Details </button>
@@ -69,11 +66,12 @@
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let element">
           <button mat-icon-button  (click)="deleteItem(element.id)"><mat-icon>delete</mat-icon></button>
+          <button mat-icon-button (click)="getLeasingById(element.id)"> <mat-checkbox></mat-checkbox> </button>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumnsSolesBonos"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumnsSolesBonos" [ngClass]="{ 'editable-row': solesBonoData.id == row.id}"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumnsSolesBonos" [ngClass]="{ 'editable-row': leasingData.id == row.id}"></tr>
     </table>
 
 
