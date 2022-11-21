@@ -4,15 +4,15 @@
       <div class="login bg-black rounded-lg mb-8">
         <img [src]="logo" alt="" width="80%" height="100%">
       </div>
-      <form [formGroup]="loginForm" class="example-form" (ngSubmit)="login()">
+      <form [formGroup]="loginForm" class="example-form" (ngSubmit)="loginForm.valid && login()">
         <mat-card-content>
           <div class="flex flex-col justify-center px-2">
             <mat-form-field class="example-full-width">
-              <input i18n [formControlName]="'email'" matInput placeholder="Usuario" autocomplete="off">
+              <input [formControlName]="'email'" matInput placeholder="Usuario" autocomplete="off">
             </mat-form-field>
             <mat-form-field class="example-full-width">
               <input [formControlName]="'password'" matInput placeholder="Contraseña" autocomplete="off"
-                     [type]="show ? 'text' : 'password'">
+                [type]="show ? 'text' : 'password'">
             </mat-form-field>
           </div>
         </mat-card-content>
@@ -25,4 +25,3 @@
   </div>
 
 </section>
-

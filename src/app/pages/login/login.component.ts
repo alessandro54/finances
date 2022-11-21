@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private authService: AuthService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
   ) {
   }
 
@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    const {email, password} = this.loginForm.value;
+    const { email, password } = this.loginForm.value;
     this.authService.login(email, password).subscribe((res) => {
       this.cookieService.set('SESSIONID', res.token);
       this.router.navigate(['/dashboard']);
