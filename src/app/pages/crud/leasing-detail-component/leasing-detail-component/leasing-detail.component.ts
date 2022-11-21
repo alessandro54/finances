@@ -5,6 +5,8 @@ import {Leasing_Out} from "../../leasing-table/model/Leasing_Out";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatDialog} from "@angular/material/dialog";
 import {leasingDetailService} from "../service/leasingDetailService";
+import {leasingAddServices} from "../../leasing-add-values/service/leasingAddService";
+import {leasing_Dates} from "../../leasing-add-values/model/leasing_Dates";
 
 
 @Component({
@@ -14,38 +16,23 @@ import {leasingDetailService} from "../service/leasingDetailService";
 })
 export class LeasingDetailComponent implements OnInit {
 
+  leasingDataGet: leasing_Dates;
+
+
   dataSource: MatTableDataSource<any>;
   formValue !: FormGroup;
   solesAccountModelObj: Leasing_Out = new Leasing_Out();
-  displayedColumnsSolesAccount: string[] = ['id', 'nameProprietary', 'valorNominal', 'nAnos',
-    'tTasaInte', 'tInteres', 'emissionDate'];
+  displayedColumnsLeasingAccount: string[] = ['id', 'Sale Price', '% Initial Quota', 'Loand Value',
+    'Frequency', 'N° Years', 'N° Periods'];
 
   dataSourceInfo1: MatTableDataSource<any>;
-  displayedColumnsSolesAccountInfo1: string[] = ['id', 'valorNominal','valorComercial','nAnos',
-    'frecCupon', 'tTasaInte', 'capitalizacion','emissionDate'];
-
-  dataSourceInfo2: MatTableDataSource<any>;
-  displayedColumnsSolesAccountInfo2: string[] = ['id', 'tInteres','tADesc', 'ImpARent', 'prima',
-    'estructu','coloca', 'flota','cavali'];
+  displayedColumnsLeasingAccountInfo1: string[] = ['pV', 'Pci','Na','Frec',
+    'NDxA', 'CNot', 'CReg','Tas','ComAct','ComPer','PortesPer','GasAdmPer','pSegDes','pSegRie','COK'];
 
   dataSourceResults: MatTableDataSource<any>;
-  displayedColumnsSolesAccountResults: string[] = ['id', 'tea','tes',
-    'cokSemestral', 'costEmisor', 'costBonista', 'frecCupNumber', 'diasCapita','nPerioAnos','nTPerio'];
+  displayedColumnsLeasingAccountResults: string[] = ['NC', 'TEA','TEP',
+    'IA', 'IP', 'PG', 'SI', 'SII','I','Cuota','A','PP','SegDes','SegRie','Portes','GasAdm','SF','Flujo'];
 
-  dataSourceFrances: MatTableDataSource<any>;
-  displayedColumnsSolesAccountFrances: string[] = ['id', 'pActualFrances','utiPerdFrances',
-    'tceaEmisorFrances', 'tceaEscudoFrances', 'treaBonistaFrances', 'duracFrances',
-    'convexFrances', 'totalRatioFrances','duracModifFrances'];
-
-  dataSourceAleman: MatTableDataSource<any>;
-  displayedColumnsSolesAccountAleman: string[] = ['id', 'pActualAleman','utiPerdAleman',
-    'tceaEmisorAleman', 'tceaEscudoAleman', 'treaBonistaAleman', 'duracAleman',
-    'convexAleman', 'totalRatioAleman','duracModifAleman'];
-
-  dataSourceAmericano: MatTableDataSource<any>;
-  displayedColumnsSolesAccountAmericano: string[] = ['id', 'pActualAmericano','utiPerdAmericano',
-    'tceaEmisorAmericano', 'tceaEscudoAmericano', 'treaBonistaAmericano', 'duracAmericano',
-    'convexAmericano', 'totalRatioAmericano','duracModifAmericano'];
 
   leasingDatesData: Leasing_Out;
 
@@ -55,36 +42,22 @@ export class LeasingDetailComponent implements OnInit {
   @ViewChild('solesAccountForm', {static: false})
   solesAccountForm!: NgForm;
 
-  constructor(private leasingDetailService: leasingDetailService, public dialog: MatDialog) {
+  constructor(private leasingaddservices: leasingAddServices, public dialog: MatDialog) {
     this.leasingDatesData = {} as Leasing_Out;
+    this.leasingDataGet = new leasing_Dates();
     this.dataSource = new MatTableDataSource<any>();
     this.dataSourceInfo1 = new MatTableDataSource<any>();
-    this.dataSourceInfo2 = new MatTableDataSource<any>();
     this.dataSourceResults = new MatTableDataSource<any>();
-    this.dataSourceFrances = new MatTableDataSource<any>();
-    this.dataSourceAleman = new MatTableDataSource<any>();
-    this.dataSourceAmericano = new MatTableDataSource<any>();
   }
   ngOnInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSourceInfo1.paginator = this.paginator;
-    this.dataSourceInfo2.paginator = this.paginator;
     this.dataSourceResults.paginator = this.paginator;
-    this.dataSourceFrances.paginator = this.paginator;
-    this.dataSourceAleman.paginator = this.paginator;
-    this.dataSourceAmericano.paginator = this.paginator;
-
-    this.getAllSolesAccounts();
+    this.getLeasingAcountById();
   }
-  getAllSolesAccounts() {
-    this.leasingDetailService.getAll().subscribe( (response: any) => {
-      this.dataSource.data = response;
-      this.dataSourceInfo1.data = response;
-      this.dataSourceInfo2.data = response;
-      this.dataSourceResults.data = response;
-      this.dataSourceFrances.data = response;
-      this.dataSourceAleman.data = response;
-      this.dataSourceAmericano.data = response;
+  getLeasingAcountById() {
+    this.leasingaddservices.getLeasingAcount(1).subscribe((response: any) =>{
+      this.leasingDataGet = response;
     });
   }
 

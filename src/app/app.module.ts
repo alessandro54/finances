@@ -35,6 +35,7 @@ import { ContactUsComponent } from './pages/contact-us/contact-us.component';
 import { LeasingTableComponent } from './pages/crud/leasing-table/page/leasing-table/leasing-table.component';
 import { LeasingAddValuesComponent } from './pages/crud/leasing-add-values/leasing-add-values/leasing-add-values.component';
 import { LeasingDetailComponent } from './pages/crud/leasing-detail-component/leasing-detail-component/leasing-detail.component';
+import {checkBudgets} from "@angular-devkit/build-angular/src/utils/bundle-calculator";
 
 
 @NgModule({
@@ -78,7 +79,6 @@ import { LeasingDetailComponent } from './pages/crud/leasing-detail-component/le
     MatInputModule,
     MatTabsModule,
     MatButtonToggleModule,
-
   ],
   providers: [],
   bootstrap: [AppComponent]
