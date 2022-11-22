@@ -1,0 +1,36 @@
+<mat-toolbar color="primary" >
+  <img
+    width="50"
+    alt="UPC Logo"
+    src="/assets/images/UPC_logo.png"  />
+  <span>Leasing Equipo 5 Upc</span>
+  <span class="example-spacer"></span>
+
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with home icon" [routerLink]="'/dashboard'">
+    <mat-icon>home</mat-icon>
+  </button>
+
+  <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item [routerLink]="'/contactUs'">
+      <mat-icon>chat</mat-icon>
+      <span>Contact Us</span>
+    </button>
+    <mat-divider></mat-divider>
+    <a mat-menu-item href="http://e-financebook.com/">
+      <mat-icon>more horiz</mat-icon>
+      <span>More Info</span>
+    </a>
+    <a mat-menu-item href="https://drive.google.com">
+      <mat-icon>description</mat-icon>
+      <span>Files</span>
+    </a>
+    <mat-divider></mat-divider>
+    <button mat-menu-item [routerLink]="'/login'">
+      <mat-icon>logout</mat-icon>
+      <span>Log Out</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>

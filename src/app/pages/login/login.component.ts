@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {User} from '../../model/User';
-import {Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {UserService} from '../../services/user.service';
-import {AuthService} from '../../services/auth.service';
-import {CookieService} from 'ngx-cookie-service';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { User } from '../../model/User';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-login',
@@ -19,12 +19,10 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private http: HttpClient,
     private router: Router,
     private authService: AuthService,
-    private cookieService: CookieService,
-  ) {
-  }
+    private cookieService: CookieService
+  ) {}
 
   password() {
     this.show = !this.show;
@@ -39,8 +37,8 @@ export class LoginComponent implements OnInit {
 
   login() {
     const { email, password } = this.loginForm.value;
-    this.authService.login(email, password).subscribe((res) => {
-      this.cookieService.set('SESSIONID', res.token);
+    this.authService.login(email, password).subscribe(({ access_token }) => {
+      this.cookieService.set('SESSIONID', access_token);
       this.router.navigate(['/dashboard']);
     });
   }

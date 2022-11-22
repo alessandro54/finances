@@ -28,17 +28,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RegisterComponent } from './pages/register/register.component';
-import { BodyComponent } from './pages/body/body.component';
-import { HeaderComponent } from './pages/header/header.component';
-import { FooterComponent } from './pages/footer/footer.component';
+import { HeaderComponent} from "./components/common/header/header.component";
+import { FooterComponent} from "./components/common/footer/footer.component";
 import { ContactUsComponent } from './pages/contact-us/contact-us.component';
 import { LeasingTableComponent } from './pages/crud/leasing-table/page/leasing-table/leasing-table.component';
 import { LeasingAddValuesComponent } from './pages/crud/leasing-add-values/leasing-add-values/leasing-add-values.component';
 import { LeasingDetailComponent } from './pages/crud/leasing-detail-component/leasing-detail-component/leasing-detail.component';
 import { JwtHelperService, JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
-import { CookieService } from 'ngx-cookie-service';
 import { AuthGuardService } from './auth/auth-guard-service';
 import {checkBudgets} from "@angular-devkit/build-angular/src/utils/bundle-calculator";
+import { LayoutComponent } from './components/common/layout/layout.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { DialogComponent } from './pages/dashboard/dialog/dialog.component';
 
 
 @NgModule({
@@ -46,14 +47,16 @@ import {checkBudgets} from "@angular-devkit/build-angular/src/utils/bundle-calcu
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    BodyComponent,
+    DashboardComponent,
     HeaderComponent,
     FooterComponent,
     ContactUsComponent,
     LeasingTableComponent,
     LeasingAddValuesComponent,
     LeasingDetailComponent,
-    //HeaderComponent,
+    LayoutComponent,
+    DashboardComponent,
+    DialogComponent,
   ],
   imports: [
     BrowserModule,
