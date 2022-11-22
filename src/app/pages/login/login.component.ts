@@ -37,8 +37,8 @@ export class LoginComponent implements OnInit {
 
   login() {
     const { email, password } = this.loginForm.value;
-    this.authService.login(email, password).subscribe(({ access_token }) => {
-      this.cookieService.set('SESSIONID', access_token);
+    this.authService.login(email, password).subscribe(({ token }) => {
+      this.cookieService.set('SESSIONID', token);
       this.router.navigate(['/dashboard']);
     });
   }
