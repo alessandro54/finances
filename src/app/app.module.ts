@@ -39,7 +39,8 @@ import { AuthGuardService } from './auth/auth-guard-service';
 import {checkBudgets} from "@angular-devkit/build-angular/src/utils/bundle-calculator";
 import { LayoutComponent } from './components/common/layout/layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { DialogComponent } from './pages/dashboard/dialog/dialog.component';
+import { CreateLeasingComponent } from './pages/leasing/create-leasing/create-leasing.component';
+
 
 
 @NgModule({
@@ -56,7 +57,7 @@ import { DialogComponent } from './pages/dashboard/dialog/dialog.component';
     LeasingDetailComponent,
     LayoutComponent,
     DashboardComponent,
-    DialogComponent,
+    CreateLeasingComponent,
   ],
   imports: [
     BrowserModule,
@@ -82,6 +83,7 @@ import { DialogComponent } from './pages/dashboard/dialog/dialog.component';
     MatPaginatorModule,
     MatDialogModule,
     MatInputModule,
+    MatFormFieldModule,
     MatTabsModule,
     MatButtonToggleModule,
   ],
