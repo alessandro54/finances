@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
-import { CookieService } from 'ngx-cookie-service';
+import {CookieService} from "ngx-cookie-service";
+
 
 @Component({
   selector: 'app-login',
