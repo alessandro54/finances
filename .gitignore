@@ -1,0 +1,21 @@
+# Rust
+/api/target
+**/*.rs.bk
+
+# env / secrets
+.env
+*.env
+!*.env.example
+
+# node / sveltekit
+node_modules
+/web/.svelte-kit
+/web/build
+/web/.vercel
+
+# misc
+.DS_Store
+
+# local mcp / claude config (may hold tokens)
+.mcp.json
+.claude/
