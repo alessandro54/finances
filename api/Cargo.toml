@@ -6,9 +6,9 @@ edition = "2021"
 [dependencies]
 axum = "0.7"
 tokio = { version = "1", features = ["full"] }
-# remote-only: avoids the bundled SQLite C build, keeps the binary lean & musl-friendly.
-# if a feature name errors on `cargo build`, check `cargo info libsql` and adjust.
-libsql = { version = "0.6", default-features = false, features = ["remote"] }
+# remote + tls: avoids the bundled SQLite C build (no `core`), keeps the binary
+# lean & musl-friendly. `tls` (hyper-rustls) is required for libsql:// (https).
+libsql = { version = "0.6", default-features = false, features = ["remote", "tls"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tower-http = { version = "0.6", features = ["cors"] }
