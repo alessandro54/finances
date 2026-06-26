@@ -16,8 +16,10 @@ All `/api/*` require `Authorization: Bearer $API_TOKEN`. `/health` is open.
 |---|---|---|
 | GET | `/health` | liveness |
 | GET | `/api/transactions?month=YYYY-MM&category=&bank=&limit=&offset=` | rows, newest first |
-| PATCH | `/api/transactions/:dedupe_id` | body `{ "category": "..." }` — recategorize |
+| PATCH | `/api/transactions/:dedupe_id` | body `{ "category": "..." }` — recategorize. Blank/whitespace clears to NULL (→ "Others") |
 | GET | `/api/categories` | `["groceries", ...]` |
+| POST | `/api/categories` | body `{ "name": "..." }` — create (idempotent) |
+| DELETE | `/api/categories/:name` | delete; transactions using it are set to NULL (→ "Others") |
 | GET | `/api/stats?month=YYYY-MM` | `by_currency / by_category / by_bank / by_day` (omit month = all-time) |
 | GET | `/api/budgets` | list |
 | PUT | `/api/budgets` | upsert `{ category, currency?, monthly_limit }` |

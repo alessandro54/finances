@@ -1,0 +1,51 @@
+# Local dev for the whole stack. Turso is a remote (cloud) DB — no DB container.
+# Copy .env.example -> .env and fill it in, then: docker compose up --build
+#
+#   api → Rust API (prod Dockerfile), reads/writes Turso
+#   web → SvelteKit dev server (HMR), talks to api server-side
+#   n8n → input layer (bank mail → parse → Turso)
+
+services:
+  api:
+    build: ./api
+    environment:
+      TURSO_DATABASE_URL: ${TURSO_DATABASE_URL}
+      TURSO_AUTH_TOKEN: ${TURSO_AUTH_TOKEN}
+      API_TOKEN: ${API_TOKEN}
+      PORT: 8080
+      RUST_LOG: ${RUST_LOG:-info}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    environment:
+      # server-side only — reaches api over the compose network
+      API_BASE: http://api:8080
+      API_TOKEN: ${API_TOKEN}
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./web:/app
+      - /app/node_modules # keep the image's node_modules, not the host's
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_PORT: 5678
+      GENERIC_TIMEZONE: ${TZ:-America/Lima}
+      N8N_SECURE_COOKIE: "false" # allow http on localhost
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: unless-stopped
+
+volumes:
+  n8n_data:

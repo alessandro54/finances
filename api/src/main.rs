@@ -52,7 +52,8 @@ async fn main() -> anyhow::Result<()> {
     let api = Router::new()
         .route("/transactions", get(list_transactions))
         .route("/transactions/:id", patch(patch_transaction))
-        .route("/categories", get(list_categories))
+        .route("/categories", get(list_categories).post(create_category))
+        .route("/categories/:name", axum::routing::delete(delete_category))
         .route("/stats", get(stats))
         .route("/budgets", get(list_budgets).put(put_budget))
         .route("/budget-status", get(budget_status))
@@ -173,6 +174,48 @@ async fn list_categories(State(st): State<AppState>) -> Result<Json<Value>, AppE
 }
 
 #[derive(Deserialize)]
+struct NewCategory {
+    name: String,
+}
+
+async fn create_category(
+    State(st): State<AppState>,
+    Json(b): Json<NewCategory>,
+) -> Result<Json<Value>, AppError> {
+    let name = b.name.trim();
+    if name.is_empty() {
+        return Err(anyhow::anyhow!("category name is empty").into());
+    }
+    let conn = st.conn()?;
+    let n = conn
+        .execute(
+            "INSERT OR IGNORE INTO categories (name) VALUES (?1)",
+            params![name],
+        )
+        .await?;
+    Ok(Json(json!({ "created": n })))
+}
+
+/// Delete a category. Transactions using it are set back to NULL so they fall
+/// under "Others" rather than dangling on a name that's no longer selectable.
+async fn delete_category(
+    State(st): State<AppState>,
+    Path(name): Path<String>,
+) -> Result<Json<Value>, AppError> {
+    let conn = st.conn()?;
+    let cleared = conn
+        .execute(
+            "UPDATE transactions SET category = NULL WHERE category = ?1",
+            params![name.clone()],
+        )
+        .await?;
+    let deleted = conn
+        .execute("DELETE FROM categories WHERE name = ?1", params![name])
+        .await?;
+    Ok(Json(json!({ "deleted": deleted, "transactions_cleared": cleared })))
+}
+
+#[derive(Deserialize)]
 struct PatchTx {
     category: String,
 }
@@ -183,15 +226,26 @@ async fn patch_transaction(
     Json(b): Json<PatchTx>,
 ) -> Result<Json<Value>, AppError> {
     let conn = st.conn()?;
+    let category = b.category.trim();
+    // Blank clears the category to NULL — the row falls under "Others".
+    if category.is_empty() {
+        let n = conn
+            .execute(
+                "UPDATE transactions SET category = NULL WHERE dedupe_id = ?1",
+                params![id],
+            )
+            .await?;
+        return Ok(Json(json!({ "updated": n })));
+    }
     conn.execute(
         "INSERT OR IGNORE INTO categories (name) VALUES (?1)",
-        params![b.category.clone()],
+        params![category],
     )
     .await?;
     let n = conn
         .execute(
             "UPDATE transactions SET category = ?1 WHERE dedupe_id = ?2",
-            params![b.category, id],
+            params![category, id],
         )
         .await?;
     Ok(Json(json!({ "updated": n })))
