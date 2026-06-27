@@ -51,7 +51,23 @@
 					<div class="mt-0.5 flex items-center gap-2 text-xs text-muted">
 						<span>{card.bank}</span>
 						{#if card.card_last4}<span>·</span><span>•••• {card.card_last4}</span>{/if}
-						<span>·</span><span>cycle day {card.cycle_start_day}</span>
+						<span>·</span>
+						<form method="POST" action="?/saveCard" use:enhance class="inline-flex items-center gap-1">
+							<input type="hidden" name="bank" value={card.bank} />
+							<input type="hidden" name="name" value={card.name ?? ''} />
+							<input type="hidden" name="card_last4" value={card.card_last4 ?? ''} />
+							<span>cycle day</span>
+							<input
+								name="cycle_start_day"
+								type="number"
+								min="1"
+								max="28"
+								value={card.cycle_start_day}
+								onchange={(e) => e.currentTarget.form?.requestSubmit()}
+								class="w-12 rounded border border-border bg-surface px-1.5 py-0.5 text-center text-xs tabular-nums text-text"
+								title="Edit the billing-cycle start day"
+							/>
+						</form>
 					</div>
 				</div>
 				<form
