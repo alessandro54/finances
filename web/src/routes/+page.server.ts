@@ -20,9 +20,21 @@ export const actions: Actions = {
 		const id = String(f.get('id') ?? '');
 		const category = String(f.get('category') ?? ''); // '' clears to Others
 		if (!id) return fail(400, { error: 'missing id' });
+		// Picking the right category counts as reviewing it → clear the flag too.
 		await api(`/api/transactions/${encodeURIComponent(id)}`, {
 			method: 'PATCH',
-			body: JSON.stringify({ category })
+			body: JSON.stringify({ category, reviewed: true })
+		});
+		return { ok: true };
+	},
+
+	review: async ({ request }) => {
+		const f = await request.formData();
+		const id = String(f.get('id') ?? '');
+		if (!id) return fail(400, { error: 'missing id' });
+		await api(`/api/transactions/${encodeURIComponent(id)}`, {
+			method: 'PATCH',
+			body: JSON.stringify({ reviewed: true })
 		});
 		return { ok: true };
 	}
