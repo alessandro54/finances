@@ -1,0 +1,53 @@
+name: deploy-api
+
+# Deploys api/ to Dokku on the VPS. web → Vercel (separate), so this only
+# fires when api/ (or this workflow) changes. Dokku builds api/Dockerfile;
+# the api/ subdir is the build context via `dokku git:set <app> build-dir api`
+# (set once on the host — see one-time setup at the bottom of this file).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'api/**'
+      - '.github/workflows/deploy-api.yml'
+  workflow_dispatch: {} # allow manual redeploy from the Actions tab
+
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false # never interrupt an in-flight deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout (full history — Dokku push needs real commits)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to Dokku
+        uses: dokku/github-action@master
+        with:
+          git_remote_url: 'ssh://dokku@${{ secrets.DOKKU_HOST }}:22/finances-api'
+          ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+
+# ── One-time setup on the VPS (run as a user with dokku access) ──────────────
+#
+#   dokku apps:create finances-api
+#   dokku git:set finances-api build-dir api          # build context = api/ subdir
+#   dokku config:set --no-restart finances-api \
+#       TURSO_DATABASE_URL=libsql://... \
+#       TURSO_AUTH_TOKEN=... \
+#       API_TOKEN=...                                  # same token web/.env uses
+#   dokku ports:set finances-api http:80:8080         # container listens on 8080
+#   # optional domain + TLS (you already run n8n etc, so dokku-letsencrypt is likely installed):
+#   #   dokku domains:set finances-api api.yourdomain.com
+#   #   dokku letsencrypt:enable finances-api
+#
+# ── GitHub repo secrets to add (Settings → Secrets and variables → Actions) ──
+#
+#   DOKKU_HOST              your VPS host/IP (e.g. vps.example.com)
+#   DOKKU_SSH_PRIVATE_KEY   a private key whose PUBLIC half is registered on Dokku:
+#                             cat ~/.ssh/id_ed25519.pub | dokku ssh-keys:add github
+#                           (paste the matching PRIVATE key into the secret)
