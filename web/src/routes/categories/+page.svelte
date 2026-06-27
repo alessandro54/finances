@@ -42,8 +42,10 @@
 		<tbody class="[&>tr:last-child>td]:border-b-0">
 			{#each cats as c (c)}
 				<tr class="transition-colors hover:bg-bg [&>td]:border-b [&>td]:border-border [&>td]:px-4 [&>td]:py-3">
-					<td class="flex items-center gap-2 font-medium">
-						<span class="inline-block h-[9px] w-[9px] shrink-0 rounded-full" style="background: {catColor(c)}"></span>{catDisplay(c)}
+					<td class="font-medium">
+						<span class="flex items-center gap-2">
+							<span class="inline-block h-[9px] w-[9px] shrink-0 rounded-full" style="background: {catColor(c)}"></span>{catDisplay(c)}
+						</span>
 					</td>
 					<td class="text-right text-muted">{data.counts[c] ?? 0}</td>
 					<td class="text-right">
