@@ -148,7 +148,7 @@
 			<h2 class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
 				Daily spend <span class="text-[0.78em] font-medium normal-case">S/</span>
 			</h2>
-			<DayBars points={trendPoints} {fmt} />
+			<DayBars points={trendPoints} transactions={data.transactions} {fmt} />
 		</div>
 	</section>
 {/if}
