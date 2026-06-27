@@ -56,6 +56,31 @@ func TestCycleWindow(t *testing.T) {
 	}
 }
 
+func TestCycleWindowDays(t *testing.T) {
+	bdb := testDB(t)
+	defer bdb.Close()
+	ctx := context.Background()
+	cases := []struct {
+		anchor     string
+		length     int
+		ref        string
+		start, end string
+	}{
+		{"2026-06-19", 30, "2026-07-10", "2026-06-19", "2026-07-19"}, // within first cycle
+		{"2026-06-19", 30, "2026-07-25", "2026-07-19", "2026-08-18"}, // next cycle (close drifts back)
+		{"2026-06-19", 30, "2026-06-19", "2026-06-19", "2026-07-19"}, // on the anchor
+	}
+	for _, c := range cases {
+		s, e, err := handler.CycleWindowDays(ctx, bdb, c.anchor, c.length, c.ref)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if s != c.start || e != c.end {
+			t.Errorf("anchor %s len %d ref %s -> [%s,%s) want [%s,%s)", c.anchor, c.length, c.ref, s, e, c.start, c.end)
+		}
+	}
+}
+
 func TestBudgetStatusSumsOnlyCardTxInWindow(t *testing.T) {
 	bdb := testDB(t)
 	defer bdb.Close()

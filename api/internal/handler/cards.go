@@ -19,10 +19,13 @@ func (h *Handler) listCards(w http.ResponseWriter, r *http.Request) {
 }
 
 type cardBody struct {
-	Bank          string  `json:"bank"`
-	Name          *string `json:"name"`
-	CardLast4     *string `json:"card_last4"`
-	CycleStartDay *int64  `json:"cycle_start_day"`
+	Bank            string  `json:"bank"`
+	Name            *string `json:"name"`
+	CardLast4       *string `json:"card_last4"`
+	CycleStartDay   *int64  `json:"cycle_start_day"`
+	CycleType       *string `json:"cycle_type"`
+	CycleLengthDays *int64  `json:"cycle_length_days"`
+	CycleAnchor     *string `json:"cycle_anchor"`
 }
 
 func (h *Handler) upsertCard(w http.ResponseWriter, r *http.Request) {
@@ -42,12 +45,28 @@ func (h *Handler) upsertCard(w http.ResponseWriter, r *http.Request) {
 	}
 	day = int64(clampInt(int(day), 1, 28))
 
-	card := &model.Card{Bank: bank, Name: b.Name, CardLast4: b.CardLast4, CycleStartDay: day}
+	cycleType := "monthly"
+	if b.CycleType != nil && *b.CycleType == "days" {
+		cycleType = "days"
+	}
+
+	card := &model.Card{
+		Bank:            bank,
+		Name:            b.Name,
+		CardLast4:       b.CardLast4,
+		CycleStartDay:   day,
+		CycleType:       cycleType,
+		CycleLengthDays: b.CycleLengthDays,
+		CycleAnchor:     b.CycleAnchor,
+	}
 	_, err := h.DB.NewInsert().Model(card).
 		On("CONFLICT (bank) DO UPDATE").
 		Set("name = EXCLUDED.name").
 		Set("card_last4 = EXCLUDED.card_last4").
 		Set("cycle_start_day = EXCLUDED.cycle_start_day").
+		Set("cycle_type = EXCLUDED.cycle_type").
+		Set("cycle_length_days = EXCLUDED.cycle_length_days").
+		Set("cycle_anchor = EXCLUDED.cycle_anchor").
 		Exec(r.Context())
 	if err != nil {
 		fail(w, err)

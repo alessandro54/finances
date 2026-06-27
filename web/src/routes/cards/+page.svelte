@@ -6,6 +6,7 @@
 
 	let { data }: PageProps = $props();
 	const cats = $derived(data.categories.filter((c) => !isOthers(c)));
+	let newMode = $state<'monthly' | 'days'>('monthly');
 </script>
 
 <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
@@ -35,9 +36,27 @@
 		<input name="card_last4" placeholder="1234" maxlength="4" class="w-20 rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-sm text-text" />
 	</label>
 	<label class="flex flex-col gap-1 text-xs text-muted">
-		Cycle day
-		<input name="cycle_start_day" type="number" min="1" max="28" value="1" class="w-20 rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-sm text-text" />
+		Cycle
+		<select name="cycle_type" bind:value={newMode} class="rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-sm text-text">
+			<option value="monthly">Day of month</option>
+			<option value="days">Every N days</option>
+		</select>
 	</label>
+	{#if newMode === 'monthly'}
+		<label class="flex flex-col gap-1 text-xs text-muted">
+			Day
+			<input name="cycle_start_day" type="number" min="1" max="28" value="1" class="w-20 rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-sm text-text" />
+		</label>
+	{:else}
+		<label class="flex flex-col gap-1 text-xs text-muted">
+			Length (days)
+			<input name="cycle_length_days" type="number" min="1" value="30" class="w-24 rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-sm text-text" />
+		</label>
+		<label class="flex flex-col gap-1 text-xs text-muted">
+			Last close date
+			<input name="cycle_anchor" type="date" class="rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-sm text-text" />
+		</label>
+	{/if}
 	<button type="submit" class="cursor-pointer rounded-[9px] bg-accent px-4 py-2 text-sm font-semibold text-white hover:brightness-105">Save card</button>
 </form>
 
@@ -52,22 +71,48 @@
 						<span>{card.bank}</span>
 						{#if card.card_last4}<span>·</span><span>•••• {card.card_last4}</span>{/if}
 						<span>·</span>
-						<form method="POST" action="?/saveCard" use:enhance class="inline-flex items-center gap-1">
-							<input type="hidden" name="bank" value={card.bank} />
-							<input type="hidden" name="name" value={card.name ?? ''} />
-							<input type="hidden" name="card_last4" value={card.card_last4 ?? ''} />
-							<span>cycle day</span>
-							<input
-								name="cycle_start_day"
-								type="number"
-								min="1"
-								max="28"
-								value={card.cycle_start_day}
-								onchange={(e) => e.currentTarget.form?.requestSubmit()}
-								class="w-12 rounded border border-border bg-surface px-1.5 py-0.5 text-center text-xs tabular-nums text-text"
-								title="Edit the billing-cycle start day"
-							/>
-						</form>
+						{#if card.cycle_type === 'days'}
+							<form method="POST" action="?/saveCard" use:enhance class="inline-flex items-center gap-1">
+								<input type="hidden" name="bank" value={card.bank} />
+								<input type="hidden" name="name" value={card.name ?? ''} />
+								<input type="hidden" name="card_last4" value={card.card_last4 ?? ''} />
+								<input type="hidden" name="cycle_type" value="days" />
+								<span>every</span>
+								<input
+									name="cycle_length_days"
+									type="number"
+									min="1"
+									value={card.cycle_length_days ?? 30}
+									onchange={(e) => e.currentTarget.form?.requestSubmit()}
+									class="w-12 rounded border border-border bg-surface px-1.5 py-0.5 text-center text-xs tabular-nums text-text"
+								/>
+								<span>days from</span>
+								<input
+									name="cycle_anchor"
+									type="date"
+									value={card.cycle_anchor ?? ''}
+									onchange={(e) => e.currentTarget.form?.requestSubmit()}
+									class="rounded border border-border bg-surface px-1.5 py-0.5 text-xs text-text"
+								/>
+							</form>
+						{:else}
+							<form method="POST" action="?/saveCard" use:enhance class="inline-flex items-center gap-1">
+								<input type="hidden" name="bank" value={card.bank} />
+								<input type="hidden" name="name" value={card.name ?? ''} />
+								<input type="hidden" name="card_last4" value={card.card_last4 ?? ''} />
+								<input type="hidden" name="cycle_type" value="monthly" />
+								<span>cycle day</span>
+								<input
+									name="cycle_start_day"
+									type="number"
+									min="1"
+									max="28"
+									value={card.cycle_start_day}
+									onchange={(e) => e.currentTarget.form?.requestSubmit()}
+									class="w-12 rounded border border-border bg-surface px-1.5 py-0.5 text-center text-xs tabular-nums text-text"
+								/>
+							</form>
+						{/if}
 					</div>
 				</div>
 				<form

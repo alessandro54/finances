@@ -34,6 +34,9 @@ export type Card = {
 	name: string | null;
 	card_last4: string | null;
 	cycle_start_day: number;
+	cycle_type: 'monthly' | 'days';
+	cycle_length_days: number | null;
+	cycle_anchor: string | null;
 };
 
 export type BudgetRow = {

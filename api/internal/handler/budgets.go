@@ -44,14 +44,40 @@ type StatusRow struct {
 	Spent      float64 `bun:"spent"`
 }
 
-// CycleWindow returns [start, end) for a card cycle. Exported for tests.
+// DaysCycleWindowSQL: fixed-length cycle window. Positional args:
+// anchor, ref, anchor, length, length, length. Returns the [cstart, cend) window
+// of length `length` days, aligned to `anchor`, that contains `ref`.
+const DaysCycleWindowSQL = `WITH w AS (
+  SELECT date(?, '+' || (CAST((julianday(?) - julianday(?)) / ? AS INTEGER) * ?) || ' days') AS cstart
+)
+SELECT cstart, date(cstart, '+' || ? || ' days') AS cend FROM w`
+
+type cycleWindowRow struct {
+	Start string `bun:"cstart"`
+	End   string `bun:"cend"`
+}
+
+// CycleWindow returns [start, end) for a day-of-month cycle. Exported for tests.
 func CycleWindow(ctx context.Context, db *bun.DB, ref string, day int) (string, string, error) {
-	var cr struct {
-		Start string `bun:"cstart"`
-		End   string `bun:"cend"`
-	}
+	var cr cycleWindowRow
 	err := db.NewRaw(CycleWindowSQL, ref, day, ref, day, ref, day).Scan(ctx, &cr)
 	return cr.Start, cr.End, err
+}
+
+// CycleWindowDays returns [start, end) for a fixed-length cycle. Exported for tests.
+func CycleWindowDays(ctx context.Context, db *bun.DB, anchor string, length int, ref string) (string, string, error) {
+	var cr cycleWindowRow
+	err := db.NewRaw(DaysCycleWindowSQL, anchor, ref, anchor, length, length, length).Scan(ctx, &cr)
+	return cr.Start, cr.End, err
+}
+
+// cycleWindow picks the window strategy from the card's cycle config.
+func cycleWindow(ctx context.Context, db *bun.DB, c *model.Card, ref string) (string, string, error) {
+	if c.CycleType == "days" && c.CycleLengthDays != nil && *c.CycleLengthDays > 0 &&
+		c.CycleAnchor != nil && *c.CycleAnchor != "" {
+		return CycleWindowDays(ctx, db, *c.CycleAnchor, int(*c.CycleLengthDays), ref)
+	}
+	return CycleWindow(ctx, db, ref, clampInt(int(c.CycleStartDay), 1, 28))
 }
 
 func (h *Handler) listBudgets(w http.ResponseWriter, r *http.Request) {
@@ -109,9 +135,9 @@ func (h *Handler) putBudget(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) budgetStatus(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	ctx := r.Context()
-	card := q.Get("card")
+	bank := q.Get("card")
 
-	if card == "" {
+	if bank == "" {
 		month := q.Get("month")
 		if month == "" {
 			if err := h.DB.NewRaw("SELECT strftime('%Y-%m','now')").Scan(ctx, &month); err != nil {
@@ -128,36 +154,34 @@ func (h *Handler) budgetStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var day int
-	err := h.DB.NewSelect().Model((*model.Card)(nil)).
-		Column("cycle_start_day").Where("bank = ?", card).Scan(ctx, &day)
+	var c model.Card
+	err := h.DB.NewSelect().Model(&c).Where("bank = ?", bank).Scan(ctx)
 	if err == sql.ErrNoRows {
-		badRequest(w, "unknown card: "+card)
+		badRequest(w, "unknown card: "+bank)
 		return
 	} else if err != nil {
 		fail(w, err)
 		return
 	}
-	day = clampInt(day, 1, 28)
 
 	ref := q.Get("date")
 	if ref == "" {
 		ref = "now"
 	}
-	start, end, err := CycleWindow(ctx, h.DB, ref, day)
+	start, end, err := cycleWindow(ctx, h.DB, &c, ref)
 	if err != nil {
 		fail(w, err)
 		return
 	}
 
 	rows := []StatusRow{}
-	err = h.DB.NewRaw(BudgetStatusCycleSQL, card, start, end, card).Scan(ctx, &rows)
+	err = h.DB.NewRaw(BudgetStatusCycleSQL, bank, start, end, bank).Scan(ctx, &rows)
 	if err != nil {
 		fail(w, err)
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{
-		"card":        card,
+		"card":        bank,
 		"cycle_start": start,
 		"cycle_end":   end,
 		"budgets":     budgetJSON(rows),
