@@ -15,10 +15,11 @@ import (
 type Handler struct {
 	DB    *bun.DB
 	Token string
+	Hub   *Hub
 }
 
 func New(db *bun.DB, token string) *Handler {
-	return &Handler{DB: db, Token: token}
+	return &Handler{DB: db, Token: token, Hub: NewHub()}
 }
 
 // Router builds the full HTTP handler: open /health, bearer-gated /api/*, CORS.
@@ -41,6 +42,8 @@ func (h *Handler) Router() http.Handler {
 		api.Get("/budgets", h.listBudgets)
 		api.Put("/budgets", h.putBudget)
 		api.Get("/budget-status", h.budgetStatus)
+		api.Get("/events", h.events)  // SSE stream
+		api.Post("/notify", h.notify) // external writers (n8n) trigger a push
 	})
 	return cors(r)
 }

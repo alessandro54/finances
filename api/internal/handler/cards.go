@@ -53,6 +53,7 @@ func (h *Handler) upsertCard(w http.ResponseWriter, r *http.Request) {
 		fail(w, err)
 		return
 	}
+	h.Hub.Broadcast(`{"source":"api"}`)
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 

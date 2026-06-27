@@ -83,5 +83,6 @@ func (h *Handler) patchTransaction(w http.ResponseWriter, r *http.Request) {
 		updated += n
 	}
 
+	h.Hub.Broadcast(`{"source":"api"}`)
 	writeJSON(w, http.StatusOK, map[string]any{"updated": updated})
 }

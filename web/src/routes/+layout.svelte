@@ -2,6 +2,7 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/state';
+	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	let { children } = $props();
@@ -13,6 +14,18 @@
 	let theme = $state<'light' | 'dark'>('light');
 	onMount(() => {
 		theme = (document.documentElement.dataset.theme as 'light' | 'dark') || 'light';
+
+		// Live updates: SSE push → debounced refetch (no polling).
+		const es = new EventSource('/events');
+		let t: ReturnType<typeof setTimeout>;
+		es.addEventListener('change', () => {
+			clearTimeout(t);
+			t = setTimeout(() => invalidateAll(), 250);
+		});
+		return () => {
+			es.close();
+			clearTimeout(t);
+		};
 	});
 	function toggleTheme() {
 		theme = theme === 'dark' ? 'light' : 'dark';

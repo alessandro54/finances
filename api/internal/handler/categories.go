@@ -38,6 +38,7 @@ func (h *Handler) createCategory(w http.ResponseWriter, r *http.Request) {
 		fail(w, err)
 		return
 	}
+	h.Hub.Broadcast(`{"source":"api"}`)
 	n, _ := res.RowsAffected()
 	writeJSON(w, http.StatusOK, map[string]any{"created": n})
 }
@@ -61,5 +62,6 @@ func (h *Handler) deleteCategory(w http.ResponseWriter, r *http.Request) {
 	}
 	c, _ := cleared.RowsAffected()
 	d, _ := deleted.RowsAffected()
+	h.Hub.Broadcast(`{"source":"api"}`)
 	writeJSON(w, http.StatusOK, map[string]any{"deleted": d, "transactions_cleared": c})
 }
