@@ -25,14 +25,14 @@ const CycleWindowSQL = `SELECT s AS cstart, date(s, '+1 month') AS cend FROM (
 // Positional args: card, start, end, card.
 const BudgetStatusCycleSQL = `SELECT b.category, b.currency, b.cycle_limit,
   COALESCE((SELECT SUM(t.amount) FROM transactions t
-    WHERE t.category = b.category AND t.currency = b.currency
+    WHERE t.deleted_at IS NULL AND t.category = b.category AND t.currency = b.currency
       AND t.bank = ? AND t.date >= ? AND t.date < ?), 0.0) AS spent
   FROM budgets b WHERE b.card = ? ORDER BY b.category, b.currency`
 
 // Positional arg: month.
 const budgetStatusMonthSQL = `SELECT b.category, b.currency, b.cycle_limit,
   COALESCE((SELECT SUM(t.amount) FROM transactions t
-    WHERE t.category = b.category AND t.currency = b.currency
+    WHERE t.deleted_at IS NULL AND t.category = b.category AND t.currency = b.currency
       AND strftime('%Y-%m', t.date) = ?), 0.0) AS spent
   FROM budgets b WHERE b.card = '' ORDER BY b.category, b.currency`
 

@@ -20,6 +20,7 @@ func (h *Handler) listTransactions(w http.ResponseWriter, r *http.Request) {
 
 	txs := []model.Transaction{}
 	err := h.DB.NewSelect().Model(&txs).
+		Where("deleted_at IS NULL").
 		Where("(? = '' OR strftime('%Y-%m', date) = ?)", month, month).
 		Where("(? = '' OR category = ?)", category, category).
 		Where("(? = '' OR bank = ?)", bank, bank).

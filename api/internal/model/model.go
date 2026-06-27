@@ -22,6 +22,7 @@ type Transaction struct {
 	Source          *string  `bun:"source" json:"source"`
 	Category        *string  `bun:"category" json:"category"`
 	CreatedAt       *string  `bun:"created_at" json:"created_at"`
+	DeletedAt       *string  `bun:"deleted_at" json:"-"` // soft delete; reads filter deleted_at IS NULL
 }
 
 type Category struct {

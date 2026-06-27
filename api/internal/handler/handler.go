@@ -42,8 +42,9 @@ func (h *Handler) Router() http.Handler {
 		api.Get("/budgets", h.listBudgets)
 		api.Put("/budgets", h.putBudget)
 		api.Get("/budget-status", h.budgetStatus)
-		api.Get("/events", h.events)  // SSE stream
-		api.Post("/notify", h.notify) // external writers (n8n) trigger a push
+		api.Get("/events", h.events)      // SSE stream
+		api.Post("/notify", h.notify)     // external writers (n8n) trigger a push
+		api.Post("/dedupe", h.postDedupe) // soft-delete duplicate transactions on demand
 	})
 	return cors(r)
 }
