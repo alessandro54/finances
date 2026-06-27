@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { catColor, catDisplay, isOthers } from '$lib/category';
-	import { fmtMoney as fmt } from '$lib/format';
+	import { fmtMoney as fmt, money } from '$lib/format';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -153,7 +153,7 @@
 									{catDisplay(b.category)}
 								</span>
 								<span class="tabular-nums {b.over ? 'font-semibold text-[#dc2626]' : 'text-muted'}">
-									{fmt(b.spent)} / {fmt(b.limit)} {b.currency}
+									{money(b.spent, b.currency)} / {fmt(b.limit)}
 								</span>
 							</div>
 							<div class="h-2 overflow-hidden rounded-full bg-track">

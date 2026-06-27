@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { catDisplay, catColor } from '$lib/category';
-	import { fmtWhen, fmtMoney as fmt } from '$lib/format';
+	import { fmtWhen, fmtMoney as fmt, money, toPEN, isForeign } from '$lib/format';
 	import PieChart from '$lib/components/PieChart.svelte';
 	import TrendChart from '$lib/components/TrendChart.svelte';
 	import Select from '$lib/components/Select.svelte';
@@ -111,7 +111,10 @@
 			class="panel flex flex-col gap-0.5 p-5 transition-transform hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(16,18,27,0.08)]"
 		>
 			<span class="text-xs font-semibold tracking-wide text-accent">{c.currency}</span>
-			<span class="text-[1.7rem] font-bold tabular-nums tracking-tight">{fmt(c.total)}</span>
+			<span class="text-[1.7rem] font-bold tabular-nums tracking-tight">{money(c.total, c.currency)}</span>
+			{#if isForeign(c.currency)}
+				<span class="text-xs text-muted">≈ S/ {fmt(toPEN(c.total, c.currency))}</span>
+			{/if}
 			<span class="text-muted">{c.count} transactions</span>
 		</div>
 	{:else}
@@ -163,8 +166,11 @@
 					<td class="whitespace-nowrap text-muted">{fmtWhen(t.date, t.time)}</td>
 					<td class="font-medium">{t.merchant_clean || t.merchant || '—'}</td>
 					<td class="text-muted">{t.bank ?? ''}</td>
-					<td class="text-right font-semibold tabular-nums">
-						{fmt(t.amount)} <span class="text-muted">{t.currency ?? ''}</span>
+					<td class="text-right tabular-nums">
+						<div class="font-semibold">{money(t.amount, t.currency)}</div>
+						{#if isForeign(t.currency)}
+							<div class="text-xs text-muted">≈ S/ {fmt(toPEN(t.amount, t.currency))}</div>
+						{/if}
 					</td>
 					<td>
 						<Select

@@ -18,3 +18,28 @@ export function fmtWhen(date: string | null, time: string | null): string {
 export function fmtMoney(n: number | null): string {
 	return (n ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
+// Approx FX → PEN. Swap for a live rate (e.g. SUNAT) later.
+const FX_TO_PEN: Record<string, number> = { PEN: 1, USD: 3.75, EUR: 4.05 };
+
+/** Currency symbol: PEN → "S/", USD → "$", EUR → "€". */
+export function sym(currency: string | null | undefined): string {
+	if (currency === 'USD') return '$';
+	if (currency === 'EUR') return '€';
+	return 'S/';
+}
+
+/** Symbol + amount, e.g. "S/ 12.34" or "$ 16.51". */
+export function money(amount: number | null, currency: string | null | undefined): string {
+	return `${sym(currency)} ${fmtMoney(amount)}`;
+}
+
+/** Convert an amount to PEN (null/PEN → unchanged). */
+export function toPEN(amount: number | null, currency: string | null | undefined): number {
+	return (amount ?? 0) * (FX_TO_PEN[currency ?? 'PEN'] ?? 1);
+}
+
+/** True when the amount should show a soles conversion (non-PEN). */
+export function isForeign(currency: string | null | undefined): boolean {
+	return !!currency && currency !== 'PEN';
+}
