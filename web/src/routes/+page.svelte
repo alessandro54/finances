@@ -51,6 +51,13 @@
 		await invalidateAll();
 	}
 
+	// Everything rolled up to soles (approx) for one headline total.
+	const totalPEN = $derived(
+		data.stats.by_currency.reduce((s, c) => s + toPEN(c.total, c.currency), 0)
+	);
+	const txCount = $derived(data.stats.by_currency.reduce((s, c) => s + c.count, 0));
+	const hasForeign = $derived(data.stats.by_currency.some((c) => isForeign(c.currency)));
+
 	// Charts mix currencies poorly — focus on the currency with the largest total.
 	const primary = $derived(
 		[...data.stats.by_currency].sort((a, b) => b.total - a.total)[0]?.currency ?? 'PEN'
@@ -105,21 +112,25 @@
 	</button>
 {/if}
 
-<section class="mb-4 grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(180px,1fr))]">
-	{#each data.stats.by_currency as c}
+<section class="mb-4">
+	{#if data.stats.by_currency.length}
 		<div
-			class="panel flex flex-col gap-0.5 p-5 transition-transform hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(16,18,27,0.08)]"
+			class="panel flex flex-col gap-1 p-5 transition-transform hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(16,18,27,0.08)]"
 		>
-			<span class="text-xs font-semibold tracking-wide text-accent">{c.currency}</span>
-			<span class="text-[1.7rem] font-bold tabular-nums tracking-tight">{money(c.total, c.currency)}</span>
-			{#if isForeign(c.currency)}
-				<span class="text-xs text-muted">≈ S/ {fmt(toPEN(c.total, c.currency))}</span>
-			{/if}
-			<span class="text-muted">{c.count} transactions</span>
+			<span class="text-xs font-semibold tracking-wide text-accent">Total spent</span>
+			<span class="text-[1.9rem] font-bold tabular-nums tracking-tight">
+				{hasForeign ? '≈ ' : ''}S/ {fmt(totalPEN)}
+			</span>
+			<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+				{#each data.stats.by_currency as c}
+					<span>{money(c.total, c.currency)}</span>
+				{/each}
+				<span>· {txCount} transactions</span>
+			</div>
 		</div>
 	{:else}
 		<div class="panel p-5"><p class="text-muted">No transactions for this period.</p></div>
-	{/each}
+	{/if}
 </section>
 
 {#if categoryBars.length || trendPoints.length}
