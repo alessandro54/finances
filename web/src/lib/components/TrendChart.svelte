@@ -26,8 +26,8 @@
 </script>
 
 {#if points.length}
-	<div class="wrap">
-		<svg viewBox="0 0 {W} {H}" preserveAspectRatio="none" role="img" aria-label="Spend trend">
+	<div class="flex flex-col gap-1.5">
+		<svg class="block h-16 w-full" viewBox="0 0 {W} {H}" preserveAspectRatio="none" role="img" aria-label="Spend trend">
 			<defs>
 				<linearGradient id="trendfill" x1="0" y1="0" x2="0" y2="1">
 					<stop offset="0%" stop-color={color} stop-opacity="0.28" />
@@ -45,40 +45,11 @@
 				vector-effect="non-scaling-stroke"
 			/>
 		</svg>
-		<div class="meta">
+		<div class="flex justify-between text-xs text-muted">
 			<span>{points[0].date} → {points[points.length - 1].date}</span>
-			<span class="total">{fmt(total)}</span>
+			<span class="font-semibold tabular-nums text-text">{fmt(total)}</span>
 		</div>
 	</div>
 {:else}
-	<p class="empty">No data.</p>
+	<p class="m-0 text-sm text-muted">No data.</p>
 {/if}
-
-<style>
-	.wrap {
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-	}
-	svg {
-		width: 100%;
-		height: 64px;
-		display: block;
-	}
-	.meta {
-		display: flex;
-		justify-content: space-between;
-		font-size: 0.75rem;
-		color: var(--text-muted);
-	}
-	.total {
-		font-variant-numeric: tabular-nums;
-		color: var(--text);
-		font-weight: 600;
-	}
-	.empty {
-		color: var(--text-muted);
-		font-size: 0.85rem;
-		margin: 0;
-	}
-</style>

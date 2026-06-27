@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
@@ -18,7 +19,9 @@
 		document.documentElement.dataset.theme = theme;
 		try {
 			localStorage.setItem('theme', theme);
-		} catch (e) {}
+		} catch (e) {
+			/* ignore */
+		}
 	}
 </script>
 
@@ -26,23 +29,42 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<header>
-	<a class="brand" href="/">
-		<span class="logo" aria-hidden="true">
+<header
+	class="sticky top-0 z-10 flex h-14 items-center gap-8 border-b border-border bg-[var(--header-bg)] px-6 backdrop-blur-md"
+>
+	<a class="flex items-center gap-2 text-text no-underline" href="/">
+		<span
+			class="grid h-8 w-8 place-items-center rounded-[9px] bg-gradient-to-br from-accent to-accent2 text-white shadow-[0_2px_8px_rgba(99,102,241,0.35)]"
+			aria-hidden="true"
+		>
 			<svg viewBox="0 0 24 24" width="20" height="20" fill="none">
 				<rect x="3" y="13" width="4" height="8" rx="1.2" fill="currentColor" opacity="0.55" />
 				<rect x="10" y="8" width="4" height="13" rx="1.2" fill="currentColor" opacity="0.8" />
 				<rect x="17" y="3" width="4" height="18" rx="1.2" fill="currentColor" />
 			</svg>
 		</span>
-		<span class="name">finances</span>
+		<span class="text-base font-bold tracking-tight">finances</span>
 	</a>
-	<nav>
+	<nav class="flex gap-1">
 		{#each nav as n}
-			<a href={n.href} class:active={page.url.pathname === n.href}>{n.label}</a>
+			<a
+				href={n.href}
+				class="rounded-lg px-3 py-1.5 font-medium no-underline transition-colors {page.url
+					.pathname === n.href
+					? 'bg-accent text-white'
+					: 'text-muted hover:bg-track hover:text-text'}"
+			>
+				{n.label}
+			</a>
 		{/each}
 	</nav>
-	<button class="theme" type="button" onclick={toggleTheme} aria-label="Toggle theme" title="Toggle theme">
+	<button
+		class="ml-auto grid h-[34px] w-[34px] place-items-center rounded-[9px] border border-border bg-surface text-muted transition-colors hover:border-accent hover:text-text"
+		type="button"
+		onclick={toggleTheme}
+		aria-label="Toggle theme"
+		title="Toggle theme"
+	>
 		{#if theme === 'dark'}
 			<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
 				<circle cx="12" cy="12" r="4" />
@@ -56,129 +78,6 @@
 	</button>
 </header>
 
-<main>
+<main class="mx-auto max-w-[1000px] px-6 pb-12 pt-7">
 	{@render children()}
 </main>
-
-<style>
-	:global(:root) {
-		--bg: #f7f8fa;
-		--surface: #ffffff;
-		--border: #e8eaef;
-		--text: #1a1d24;
-		--text-muted: #7c828e;
-		--track: #eef0f4;
-		--accent: #6366f1;
-		--accent-2: #8b5cf6;
-		--shadow: 0 1px 2px rgba(16, 18, 27, 0.04), 0 4px 16px rgba(16, 18, 27, 0.04);
-		--radius: 12px;
-		--header-bg: rgba(255, 255, 255, 0.85);
-		--warn-bg: #fffbeb;
-		--warn-border: #f6c453;
-		--warn-text: #92580e;
-	}
-	:global(:root[data-theme='dark']) {
-		--bg: #0e1014;
-		--surface: #171a21;
-		--border: #262a33;
-		--text: #e8eaf0;
-		--text-muted: #8b919e;
-		--track: #232733;
-		--accent: #818cf8;
-		--accent-2: #a78bfa;
-		--shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.35);
-		--header-bg: rgba(23, 26, 33, 0.8);
-		--warn-bg: rgba(245, 158, 11, 0.1);
-		--warn-border: #8a6d3b;
-		--warn-text: #fbbf24;
-	}
-	:global(body) {
-		margin: 0;
-		font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif;
-		color: var(--text);
-		background: var(--bg);
-		-webkit-font-smoothing: antialiased;
-		transition: background-color 0.2s ease, color 0.2s ease;
-	}
-	:global(*) {
-		box-sizing: border-box;
-	}
-
-	header {
-		display: flex;
-		align-items: center;
-		gap: 2rem;
-		padding: 0 1.5rem;
-		height: 56px;
-		background: var(--header-bg);
-		backdrop-filter: saturate(180%) blur(8px);
-		border-bottom: 1px solid var(--border);
-		position: sticky;
-		top: 0;
-		z-index: 10;
-	}
-	.brand {
-		display: flex;
-		align-items: center;
-		gap: 0.55rem;
-		text-decoration: none;
-		color: var(--text);
-	}
-	.logo {
-		display: grid;
-		place-items: center;
-		width: 32px;
-		height: 32px;
-		border-radius: 9px;
-		color: #fff;
-		background: linear-gradient(135deg, var(--accent), var(--accent-2));
-		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
-	}
-	.name {
-		font-weight: 700;
-		font-size: 1rem;
-		letter-spacing: -0.01em;
-	}
-	nav {
-		display: flex;
-		gap: 0.25rem;
-	}
-	.theme {
-		margin-left: auto;
-		display: grid;
-		place-items: center;
-		width: 34px;
-		height: 34px;
-		border: 1px solid var(--border);
-		border-radius: 9px;
-		background: var(--surface);
-		color: var(--text-muted);
-		cursor: pointer;
-		transition: color 0.15s, border-color 0.15s;
-	}
-	.theme:hover {
-		color: var(--text);
-		border-color: var(--accent);
-	}
-	nav a {
-		padding: 0.35rem 0.75rem;
-		border-radius: 8px;
-		color: var(--text-muted);
-		text-decoration: none;
-		font-weight: 500;
-		transition: background 0.15s, color 0.15s;
-	}
-	nav a:hover {
-		background: var(--track);
-		color: var(--text);
-	}
-	nav a.active {
-		background: var(--accent);
-		color: #fff;
-	}
-	main {
-		max-width: 1000px;
-		margin: 0 auto;
-		padding: 1.75rem 1.5rem 3rem;
-	}
-</style>

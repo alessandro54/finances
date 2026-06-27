@@ -22,8 +22,8 @@
 </script>
 
 {#if total > 0}
-	<div class="pie">
-		<svg viewBox="0 0 160 160" width="148" height="148" role="img" aria-label="Spend by category">
+	<div class="flex flex-wrap items-center gap-5">
+		<svg class="shrink-0" viewBox="0 0 160 160" width="148" height="148" role="img" aria-label="Spend by category">
 			<g transform="rotate(-90 80 80)">
 				{#each slices as s (s.label)}
 					<circle
@@ -38,85 +38,20 @@
 					/>
 				{/each}
 			</g>
-			<text x="80" y="76" text-anchor="middle" class="c-label">Total</text>
-			<text x="80" y="92" text-anchor="middle" class="c-total">{fmt(total)}</text>
+			<text x="80" y="76" text-anchor="middle" class="fill-muted uppercase [font-size:9px] [letter-spacing:0.05em]">Total</text>
+			<text x="80" y="92" text-anchor="middle" class="fill-text font-bold [font-size:13px]">{fmt(total)}</text>
 		</svg>
-		<ul class="legend">
+		<ul class="m-0 flex min-w-[160px] flex-1 list-none flex-col gap-1.5 p-0">
 			{#each slices as s (s.label)}
-				<li>
-					<span class="dot" style="background: {s.color}"></span>
-					<span class="lbl" title={s.label}>{s.label}</span>
-					<span class="pct">{Math.round(s.frac * 100)}%</span>
-					<span class="val">{fmt(s.value)}</span>
+				<li class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 text-sm">
+					<span class="h-[9px] w-[9px] rounded-full" style="background: {s.color}"></span>
+					<span class="truncate text-text" title={s.label}>{s.label}</span>
+					<span class="tabular-nums text-muted">{Math.round(s.frac * 100)}%</span>
+					<span class="font-medium tabular-nums text-text">{fmt(s.value)}</span>
 				</li>
 			{/each}
 		</ul>
 	</div>
 {:else}
-	<p class="empty">No data.</p>
+	<p class="m-0 text-sm text-muted">No data.</p>
 {/if}
-
-<style>
-	.pie {
-		display: flex;
-		align-items: center;
-		gap: 1.25rem;
-		flex-wrap: wrap;
-	}
-	svg {
-		flex: none;
-	}
-	.c-label {
-		font-size: 9px;
-		fill: var(--text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-	.c-total {
-		font-size: 13px;
-		font-weight: 700;
-		fill: var(--text);
-	}
-	.legend {
-		flex: 1;
-		min-width: 160px;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-	}
-	.legend li {
-		display: grid;
-		grid-template-columns: auto 1fr auto auto;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.8rem;
-	}
-	.dot {
-		width: 9px;
-		height: 9px;
-		border-radius: 999px;
-	}
-	.lbl {
-		color: var(--text);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-	.pct {
-		color: var(--text-muted);
-		font-variant-numeric: tabular-nums;
-	}
-	.val {
-		color: var(--text);
-		font-variant-numeric: tabular-nums;
-		font-weight: 500;
-	}
-	.empty {
-		color: var(--text-muted);
-		font-size: 0.85rem;
-		margin: 0;
-	}
-</style>

@@ -17,74 +17,32 @@
 
 {#if open}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="backdrop" onclick={close} role="presentation" transition:fade={{ duration: 150 }}>
+	<div
+		class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/45 px-4 pb-8 pt-16 backdrop-blur-[2px]"
+		onclick={close}
+		role="presentation"
+		transition:fade={{ duration: 150 }}
+	>
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
-			class="modal"
+			class="panel w-full max-w-[620px] shadow-[0_12px_48px_rgba(0,0,0,0.25)]"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
 			onclick={(e) => e.stopPropagation()}
 			transition:scale={{ start: 0.96, duration: 160 }}
 		>
-			<header>
-				<h2>{title}</h2>
-				<button class="x" onclick={close} aria-label="Close">✕</button>
+			<header class="flex items-center justify-between border-b border-border px-5 py-4">
+				<h2 class="m-0 text-[1.05rem] tracking-tight">{title}</h2>
+				<button
+					class="cursor-pointer rounded-[7px] border-none bg-transparent px-1.5 py-1 text-base text-muted hover:bg-track hover:text-text"
+					onclick={close}
+					aria-label="Close">✕</button
+				>
 			</header>
-			<div class="body">
+			<div class="px-5 pb-5 pt-4">
 				{@render children?.()}
 			</div>
 		</div>
 	</div>
 {/if}
-
-<style>
-	.backdrop {
-		position: fixed;
-		inset: 0;
-		z-index: 50;
-		background: rgba(15, 18, 27, 0.45);
-		backdrop-filter: blur(2px);
-		display: flex;
-		align-items: flex-start;
-		justify-content: center;
-		padding: 4rem 1rem 2rem;
-		overflow-y: auto;
-	}
-	.modal {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
-		width: 100%;
-		max-width: 620px;
-	}
-	header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1rem 1.25rem;
-		border-bottom: 1px solid var(--border);
-	}
-	h2 {
-		margin: 0;
-		font-size: 1.05rem;
-		letter-spacing: -0.01em;
-	}
-	.x {
-		border: none;
-		background: transparent;
-		color: var(--text-muted);
-		font-size: 1rem;
-		cursor: pointer;
-		padding: 0.25rem 0.4rem;
-		border-radius: 7px;
-	}
-	.x:hover {
-		background: var(--track);
-		color: var(--text);
-	}
-	.body {
-		padding: 1rem 1.25rem 1.25rem;
-	}
-</style>
