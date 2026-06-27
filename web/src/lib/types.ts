@@ -28,3 +28,28 @@ export type Stats = {
 	by_bank: BankTotal[];
 	by_day: DayTotal[];
 };
+
+export type Card = {
+	bank: string;
+	name: string | null;
+	card_last4: string | null;
+	cycle_start_day: number;
+};
+
+export type BudgetRow = {
+	category: string;
+	currency: string;
+	limit: number;
+	spent: number;
+	remaining: number;
+	over: boolean;
+	pct: number;
+};
+
+export type BudgetStatus = {
+	card?: string;
+	cycle_start?: string;
+	cycle_end?: string;
+	month?: string;
+	budgets: BudgetRow[];
+};

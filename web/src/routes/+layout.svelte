@@ -8,6 +8,7 @@
 	let { children } = $props();
 	const nav = [
 		{ href: '/', label: 'Transactions' },
+		{ href: '/cards', label: 'Cards' },
 		{ href: '/categories', label: 'Categories' }
 	];
 
