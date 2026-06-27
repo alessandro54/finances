@@ -4,11 +4,10 @@ Personal finance control. Monorepo.
 
 ```
 finances/
-  api/   Rust (axum + libsql) REST API — the "intelligence" layer. Reads/writes Turso.
+  api/   Go (chi + Bun ORM) REST API — the "intelligence" layer. Reads/writes Turso.
          Deploy to your own VM (Dokku). Also the tool surface for a future LLM budget advisor.
   web/   SvelteKit dashboard — deploy to Vercel. Talks to api/ server-side (token hidden).
-  db/    Schema snapshot + notes. Canonical migrations live in api/migrations/ (auto-applied on boot).
-  n8n/   Exported n8n workflow (bank-mail → parse → Turso). The "input" layer.
+  n8n/   Exported n8n workflow (bank-mail + Interbank screenshots → parse → Turso). The "input" layer.
 ```
 
 ## Architecture
@@ -29,6 +28,6 @@ n8n (INPUT: capture bank mail, parse w/ Claude→GPT fallback, dedup)  ─┐
 Currencies (PEN/USD) are stored raw per row; convert client-side in the dash.
 
 ## Quick start
-- `api/` — see `api/README` notes below / `api/.env.example`. `cargo run`.
-- DB — schema auto-migrates on API boot (`api/migrations/`). Manual init: `turso db shell <db> < db/schema.sql`.
+- `api/` — see `api/README.md` / `api/.env.example`. `go run ./cmd/server`.
+- DB — schema auto-migrates on API boot from `api/internal/db/migrations/*.up.sql` (Bun migrator). No manual init.
 - `web/` — see `web/README.md`.

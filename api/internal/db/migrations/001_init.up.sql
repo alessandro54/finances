@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   created_at       TEXT DEFAULT (datetime('now'))
 );
 
+--bun:split
 CREATE TABLE IF NOT EXISTS errors (
   dedupe_id  TEXT PRIMARY KEY,
   error      TEXT,
@@ -25,10 +26,14 @@ CREATE TABLE IF NOT EXISTS errors (
   created_at TEXT DEFAULT (datetime('now'))
 );
 
+--bun:split
 CREATE TABLE IF NOT EXISTS categories (
   name       TEXT PRIMARY KEY,
   created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_tx_date     ON transactions(date);
+--bun:split
+CREATE INDEX IF NOT EXISTS idx_tx_date ON transactions(date);
+
+--bun:split
 CREATE INDEX IF NOT EXISTS idx_tx_category ON transactions(category);

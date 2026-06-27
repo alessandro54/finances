@@ -1,16 +1,14 @@
-# Build
-FROM rust:1-bookworm AS build
+# Build — pure-Go, CGO disabled (libsql driver is pure Go) → static binary.
+FROM golang:1.25-bookworm AS build
 WORKDIR /app
-COPY Cargo.toml ./
-COPY src ./src
-COPY migrations ./migrations
-RUN cargo build --release
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /finances-api ./cmd/server
 
-# Runtime (glibc slim — tiny idle RAM; certs needed for Turso TLS)
-FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-COPY --from=build /app/target/release/finances-api /usr/local/bin/finances-api
+# Runtime — distroless static (ships CA certs for Turso TLS); tiny, no shell.
+FROM gcr.io/distroless/static-debian12
+COPY --from=build /finances-api /finances-api
 ENV PORT=8080
 EXPOSE 8080
-CMD ["finances-api"]
+ENTRYPOINT ["/finances-api"]

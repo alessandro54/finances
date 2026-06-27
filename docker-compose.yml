@@ -13,7 +13,6 @@ services:
       TURSO_AUTH_TOKEN: ${TURSO_AUTH_TOKEN}
       API_TOKEN: ${API_TOKEN}
       PORT: 8080
-      RUST_LOG: ${RUST_LOG:-info}
     ports:
       - "8080:8080"
     restart: unless-stopped

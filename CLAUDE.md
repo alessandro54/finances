@@ -7,36 +7,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Personal finance tracker, monorepo, three layers around one Turso (libSQL) database:
 
 - **n8n** (`n8n/`) — INPUT layer. Bank mail (BBVA Outlook + Diners Gmail) → parse with Claude Sonnet (GPT-4o-mini fallback) → dedup → write to Turso → Telegram confirm. 12h backfill sweep re-fetches last 7 days, idempotent. Lives as an exported workflow JSON, not code.
-- **api** (`api/`) — INTELLIGENCE layer. Rust (axum + libsql) REST API reading/writing Turso. Single file: `api/src/main.rs`. Also the tool surface for a future LLM budget advisor.
+- **api** (`api/`) — INTELLIGENCE layer. Go (chi router + Bun ORM) REST API reading/writing Turso, remote-only (pure-Go libsql driver, no CGO). Layered: `cmd/server` (entrypoint), `internal/db` (connection + migrations), `internal/model` (Bun models), `internal/handler` (router + handlers, one file per resource). Also the tool surface for a future LLM budget advisor.
 - **web** (`web/`) — SvelteKit (Svelte 5 runes) dashboard → Vercel. Talks to `api` **server-side only** (API token never reaches the browser). Routes: `/` (transactions + stats + inline recategorize) and `/categories` (add/delete). No auth gate yet.
 
 Data flows one way into Turso (n8n writes), and the API + dash read/annotate it. The three parts deploy independently (n8n host, Dokku VM, Vercel) and share only the database + `API_TOKEN`.
 
 ## Commands
 
-Whole stack (from repo root): `cp .env.example .env` (fill in), then `docker compose up --build`. Brings up api (8080), web dev server w/ HMR (5173), n8n (5678). Turso is remote — no DB container. `web` uses `web/Dockerfile.dev` (dev server); the root prod Dockerfile is rust-only.
+Whole stack (from repo root): `cp .env.example .env` (fill in), then `docker compose up --build`. Brings up api (8080), web dev server w/ HMR (5173), n8n (5678). Turso is remote — no DB container. `web` uses `web/Dockerfile.dev` (dev server); the prod `api/Dockerfile` is a multi-stage Go build → distroless static.
 
 API (run from `api/`):
 ```bash
-cargo run                 # needs TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, API_TOKEN in env/.env
-cargo check               # fast compile check (no env needed)
-cargo build --release     # release profile: strip + lto + codegen-units=1
-docker build -t finances-api .   # Dokku deploy
+go run ./cmd/server   # needs TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, API_TOKEN in env/.env
+go build ./...        # compile check
+go vet ./...
+go test ./...         # unit tests (in-memory SQLite via modernc.org/sqlite; no env/DB needed)
 ```
+Config is loaded + validated in `internal/config`. Tests live in `api/tests/` (black-box): they open an in-memory SQLite, run the real Bun migrations, and exercise the cycle-window + budget-status SQL via the exported `handler.CycleWindow` / `handler.BudgetStatusCycleSQL`.
 
 Web (run from `web/`): `npm run dev` (needs `web/.env`: API_BASE, API_TOKEN) · `npm run check` (svelte-check) · `npm run build` (vercel adapter).
 
-No tests exist yet. Manual DB init (migrations otherwise auto-apply on boot): `turso db shell <db> < db/schema.sql`.
-
 ## API architecture notes
 
-- **Auth**: all `/api/*` routes require `Authorization: Bearer $API_TOKEN` (middleware in `auth`). `/health` is open. CORS is permissive.
-- **Migrations are code-driven**: SQL files in `api/migrations/`, registered in the `MIGRATIONS` array in `main.rs`, applied once on boot, tracked in `_migrations` table. To add one: drop `NNN_name.sql` in `migrations/` AND add it to the array — both, or it won't run. `db/schema.sql` is a hand-kept reference snapshot, NOT the source of truth.
-- **libsql is `remote`-only** (`default-features = false, features = ["remote"]`) — no bundled SQLite C build, keeps the binary lean/musl-friendly. If a feature name errors on build, run `cargo info libsql` and adjust `Cargo.toml`.
-- **Transactions keyed by `dedupe_id`** (the PK), set by n8n. The PATCH recategorize route takes `dedupe_id` as the path param, not a numeric id.
+- **Stack**: Go, chi router (stdlib `net/http`), Bun ORM over the pure-Go libsql remote driver (`tursodatabase/libsql-client-go`, CGO-free). Models in `internal/model`, handlers in `internal/handler` (`Handler` struct holds `*bun.DB`; one file per resource).
+- **Auth**: all `/api/*` require `Authorization: Bearer $API_TOKEN` (chi middleware in `handler.auth`). `/health` is open. CORS permissive.
+- **Migrations are the schema source of truth**: `internal/db/migrations/NNN_name.up.sql`, embedded via `//go:embed`, applied on boot by the Bun migrator (tracked in `bun_migrations`). Multi-statement files separate statements with `--bun:split` (the remote driver runs one statement per call). To add one: drop a higher-numbered `.up.sql`. There is no separate schema snapshot file.
+- **Complex SQL uses Bun raw queries** (`db.NewRaw`) with **positional `?`** placeholders — Bun has no `bun.Named`, so repeat the arg each time a value recurs (see `CYCLE_WINDOW`/budget-status SQL in `internal/handler/budgets.go`). CRUD uses the Bun query builder.
+- **Transactions keyed by `dedupe_id`** (the PK), set by n8n. The PATCH route takes `dedupe_id` as the path param. PATCH body is `{category?, reviewed?}` — blank category clears to NULL (→ "Others"), `reviewed:true` sets `confidence='high'`.
+- **Cards + per-cycle budgets**: a `card` is keyed by `bank` (one per bank) and holds `cycle_start_day`. Budgets are per-card per-cycle (`cycle_limit`); `budget-status?card=` evaluates over that card's billing cycle, summing only that card's transactions. No card → legacy calendar-month mode.
 - **Currency is stored raw per row** (PEN/USD/EUR), never converted server-side. Conversion happens client-side in the dash.
-- `GET /api/budget-status` is purpose-built as the future LLM advisor's tool: returns `{category, limit, spent, remaining, over, pct}` per category for a month (defaults to current).
-- Errors: any handler returning `Result<_, AppError>` maps `anyhow::Error` → 500 with the message logged via tracing.
 
 ## n8n workflow
 
