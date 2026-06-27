@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fmtMoney, money, toPEN } from '$lib/format';
+	import { money, toPEN } from '$lib/format';
 	import type { Transaction } from '$lib/types';
 
 	type Point = { date: string; value: number };
@@ -20,7 +20,6 @@
 		})()
 	);
 
-	// Green at/below median → red at the peak (max), smooth hue ramp in between.
 	function barColor(v: number): string {
 		if (v <= median) return 'hsl(150 55% 45%)';
 		const t = max > median ? (v - median) / (max - median) : 1;
@@ -45,10 +44,30 @@
 			return m;
 		})()
 	);
+
+	// cursor-following tooltip — coords are RELATIVE to the chart container
+	// (a `fixed` tooltip breaks: the panel's transition-transform makes it a
+	// containing block, so viewport coords don't apply). absolute it is.
+	let hovered = $state<string | null>(null);
+	let mx = $state(0);
+	let my = $state(0);
+	let boxW = $state(600);
+	const TW = 256; // tooltip width (w-64)
+	const left = $derived(Math.max(0, Math.min(mx + 16, boxW - TW)));
+	const hoveredValue = $derived(hovered ? (points.find((p) => p.date === hovered)?.value ?? 0) : 0);
+	const hoveredRows = $derived(hovered ? (byDay[hovered] ?? []) : []);
+
+	function track(e: MouseEvent) {
+		const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+		boxW = r.width;
+		mx = e.clientX - r.left;
+		my = e.clientY - r.top;
+	}
 </script>
 
 {#if points.length}
-	<div>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="relative" onmousemove={track} onmouseleave={() => (hovered = null)}>
 		<div class="mb-2 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-xs text-muted">
 			<span><span class="font-semibold text-text">{fmt(median)}</span> median/day</span>
 			<span>· max {fmt(max)}</span>
@@ -56,33 +75,12 @@
 		</div>
 		<div class="relative flex h-40 items-end gap-px">
 			{#each points as p (p.date)}
-				<div class="group relative flex h-full flex-1 flex-col justify-end">
-					<!-- hover tooltip: that day's merchants, biggest first -->
-					<div
-						class="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1 hidden w-48 -translate-x-1/2 rounded-lg border border-border bg-surface p-2 text-left shadow-[var(--shadow)] group-hover:block"
-					>
-						<div class="mb-1 flex justify-between gap-2 border-b border-border pb-1 text-xs font-semibold">
-							<span>{p.date}</span><span class="tabular-nums">S/ {fmt(p.value)}</span>
-						</div>
-						{#each (byDay[p.date] ?? []).slice(0, 6) as t}
-							<div class="flex justify-between gap-2 text-[0.72rem]">
-								<span class="truncate text-muted">{t.merchant}</span>
-								<span class="tabular-nums">{money(t.amount, t.currency)}</span>
-							</div>
-						{:else}
-							<div class="text-[0.72rem] text-muted">No itemized transactions.</div>
-						{/each}
-						{#if (byDay[p.date] ?? []).length > 6}
-							<div class="mt-0.5 text-[0.68rem] text-muted">
-								+{(byDay[p.date] ?? []).length - 6} more
-							</div>
-						{/if}
-					</div>
-					<div
-						class="min-h-px w-full rounded-t transition-[height] duration-300 hover:brightness-110"
-						style="height: {p.value > 0 ? Math.max((p.value / max) * 100, 3) : 0}%; background: {barColor(p.value)}"
-					></div>
-				</div>
+				<div
+					class="min-h-px flex-1 rounded-t transition-[height] duration-300 hover:brightness-110"
+					style="height: {p.value > 0 ? Math.max((p.value / max) * 100, 3) : 0}%; background: {barColor(p.value)}"
+					onmouseenter={() => (hovered = p.date)}
+					role="presentation"
+				></div>
 			{/each}
 			{#if median > 0}
 				<div
@@ -97,6 +95,28 @@
 			<span>{points[0].date}</span>
 			<span>{points[points.length - 1].date}</span>
 		</div>
+
+		{#if hovered}
+		<div
+			class="pointer-events-none absolute z-50 w-64 rounded-xl border border-border bg-surface p-3 text-left shadow-[0_8px_30px_rgba(0,0,0,0.18)]"
+			style="left: {left}px; top: {my + 16}px"
+		>
+			<div class="mb-1.5 flex justify-between gap-3 border-b border-border pb-1.5 text-sm font-semibold">
+				<span>{hovered}</span><span class="tabular-nums">S/ {fmt(hoveredValue)}</span>
+			</div>
+			{#each hoveredRows.slice(0, 8) as t}
+				<div class="flex justify-between gap-3 py-0.5 text-sm">
+					<span class="truncate text-muted">{t.merchant}</span>
+					<span class="tabular-nums">{money(t.amount, t.currency)}</span>
+				</div>
+			{:else}
+				<div class="text-sm text-muted">No itemized transactions.</div>
+			{/each}
+			{#if hoveredRows.length > 8}
+				<div class="mt-1 text-xs text-muted">+{hoveredRows.length - 8} more</div>
+			{/if}
+		</div>
+		{/if}
 	</div>
 {:else}
 	<p class="m-0 text-sm text-muted">No data.</p>
