@@ -15,7 +15,9 @@
 
 	function pick(v: string) {
 		open = false;
-		if (v !== value) onChange(v);
+		// Always fire — re-selecting the current category is a valid "confirm"
+		// (e.g. an already-correct flagged row), which clears the needs-review flag.
+		onChange(v);
 	}
 
 	function onWindowClick(e: MouseEvent) {
