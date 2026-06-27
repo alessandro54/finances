@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { fade, scale } from 'svelte/transition';
 
 	let {
 		open = $bindable(false),
@@ -16,9 +17,16 @@
 
 {#if open}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="backdrop" onclick={close} role="presentation">
+	<div class="backdrop" onclick={close} role="presentation" transition:fade={{ duration: 150 }}>
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.stopPropagation()}>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			onclick={(e) => e.stopPropagation()}
+			transition:scale={{ start: 0.96, duration: 160 }}
+		>
 			<header>
 				<h2>{title}</h2>
 				<button class="x" onclick={close} aria-label="Close">✕</button>

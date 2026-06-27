@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import { catColor, catDisplay, OTHERS } from '$lib/category';
 
 	let {
@@ -37,7 +38,7 @@
 	</button>
 
 	{#if open}
-		<ul class="menu" role="listbox">
+		<ul class="menu" role="listbox" transition:fly={{ y: -6, duration: 130 }}>
 			{#each choices as c (c)}
 				<li>
 					<button

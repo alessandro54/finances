@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { catDisplay, catColor } from '$lib/category';
 	import { fmtWhen, fmtMoney as fmt } from '$lib/format';
@@ -76,7 +77,7 @@
 </div>
 
 {#if flagged.length}
-	<button class="review-banner" onclick={() => (reviewOpen = true)}>
+	<button class="review-banner" onclick={() => (reviewOpen = true)} transition:slide={{ duration: 200 }}>
 		<span class="rb-left">
 			<span class="rb-icon">⚠</span>
 			{flagged.length} transaction{flagged.length > 1 ? 's' : ''} need review
@@ -207,6 +208,13 @@
 		border-radius: var(--radius);
 		box-shadow: var(--shadow);
 		padding: 1.1rem 1.25rem;
+		transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+	.stat:hover,
+	.charts .card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 20px rgba(16, 18, 27, 0.08);
 	}
 	h2 {
 		font-size: 0.78rem;
@@ -277,6 +285,9 @@
 	}
 	tbody tr:last-child td {
 		border-bottom: none;
+	}
+	tbody tr {
+		transition: background-color 0.35s ease, box-shadow 0.35s ease;
 	}
 	tbody tr:hover {
 		background: var(--bg);

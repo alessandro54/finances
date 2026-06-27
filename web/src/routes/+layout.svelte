@@ -98,6 +98,7 @@
 		color: var(--text);
 		background: var(--bg);
 		-webkit-font-smoothing: antialiased;
+		transition: background-color 0.2s ease, color 0.2s ease;
 	}
 	:global(*) {
 		box-sizing: border-box;
