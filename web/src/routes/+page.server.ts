@@ -1,11 +1,25 @@
 import { api } from '$lib/api';
 import { getRates } from '$lib/server/fx';
+import { demoTransactions, demoStats, demoCategories } from '$lib/server/demo';
 import { fail } from '@sveltejs/kit';
 import type { Stats, Transaction } from '$lib/types';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url, fetch }) => {
+export const load: PageServerLoad = async ({ url, fetch, locals }) => {
 	const month = url.searchParams.get('month') ?? '';
+
+	// Guests get a deterministic synthetic dataset — real data never leaves the server.
+	if (!locals.owner) {
+		const transactions = demoTransactions(month);
+		return {
+			month,
+			stats: demoStats(month, transactions),
+			transactions,
+			categories: demoCategories(),
+			rates: await getRates(fetch)
+		};
+	}
+
 	const qs = month ? `?month=${month}` : '';
 	const [stats, transactions, categories, rates] = await Promise.all([
 		api<Stats>(`/api/stats${qs}`),
@@ -17,7 +31,8 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
 };
 
 export const actions: Actions = {
-	recategorize: async ({ request }) => {
+	recategorize: async ({ request, locals }) => {
+		if (!locals.owner) return fail(403, { error: 'read-only demo' });
 		const f = await request.formData();
 		const id = String(f.get('id') ?? '');
 		const category = String(f.get('category') ?? ''); // '' clears to Others
@@ -30,7 +45,8 @@ export const actions: Actions = {
 		return { ok: true };
 	},
 
-	review: async ({ request }) => {
+	review: async ({ request, locals }) => {
+		if (!locals.owner) return fail(403, { error: 'read-only demo' });
 		const f = await request.formData();
 		const id = String(f.get('id') ?? '');
 		if (!id) return fail(400, { error: 'missing id' });

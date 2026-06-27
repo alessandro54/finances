@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
 	import { catColor, catDisplay, isOthers } from '$lib/category';
 	import { fmtMoney as fmt, money, setRates } from '$lib/format';
 	import type { PageProps } from './$types';
@@ -7,8 +8,15 @@
 	let { data }: PageProps = $props();
 	// svelte-ignore state_referenced_locally
 	setRates(data.rates);
+	const owner = $derived(page.data.owner ?? false); // guests: read-only demo
 	const cats = $derived(data.categories.filter((c) => !isOthers(c)));
 	let newMode = $state<'monthly' | 'days'>('monthly');
+
+	function cycleText(c: (typeof data.cards)[number]): string {
+		return c.cycle_type === 'days'
+			? `every ${c.cycle_length_days ?? 30} days from ${c.cycle_anchor ?? '—'}`
+			: `cycle day ${c.cycle_start_day}`;
+	}
 
 	// cycle_end is exclusive (next cycle's start). The cycle's last day is end − 1.
 	function lastDay(end?: string): string {
@@ -26,7 +34,8 @@
 	</div>
 </div>
 
-<!-- Add / edit a card (upsert by bank) -->
+<!-- Add / edit a card (upsert by bank) — owner only -->
+{#if owner}
 <form
 	method="POST"
 	action="?/saveCard"
@@ -69,6 +78,7 @@
 	{/if}
 	<button type="submit" class="cursor-pointer rounded-[9px] bg-accent px-4 py-2 text-sm font-semibold text-white hover:brightness-105">Save card</button>
 </form>
+{/if}
 
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 	{#each data.cards as card (card.bank)}
@@ -81,7 +91,9 @@
 						<span>{card.bank}</span>
 						{#if card.card_last4}<span>·</span><span>•••• {card.card_last4}</span>{/if}
 						<span>·</span>
-						{#if card.cycle_type === 'days'}
+						{#if !owner}
+							<span>{cycleText(card)}</span>
+						{:else if card.cycle_type === 'days'}
 							<form method="POST" action="?/saveCard" use:enhance class="inline-flex items-center gap-1">
 								<input type="hidden" name="bank" value={card.bank} />
 								<input type="hidden" name="name" value={card.name ?? ''} />
@@ -125,6 +137,7 @@
 						{/if}
 					</div>
 				</div>
+				{#if owner}
 				<form
 					method="POST"
 					action="?/deleteCard"
@@ -136,6 +149,7 @@
 					<input type="hidden" name="bank" value={card.bank} />
 					<button type="submit" class="cursor-pointer rounded-md border border-[#f0c4c4] bg-transparent px-2 py-1 text-xs font-medium text-[#dc2626] hover:bg-[#fef2f2]">Delete</button>
 				</form>
+				{/if}
 			</div>
 
 			{#if st?.cycle_start}
@@ -171,7 +185,8 @@
 				<p class="mb-4 text-sm text-muted">No budgets yet for this card.</p>
 			{/if}
 
-			<!-- add / set a budget -->
+			<!-- add / set a budget — owner only -->
+			{#if owner}
 			<form method="POST" action="?/saveBudget" use:enhance class="flex flex-wrap items-center gap-2 border-t border-border pt-3">
 				<input type="hidden" name="card" value={card.bank} />
 				<select name="category" class="rounded-md border border-border bg-surface px-2 py-1.5 text-sm text-text">
@@ -185,6 +200,7 @@
 				<input name="cycle_limit" type="number" step="0.01" min="0" placeholder="Limit" required class="w-24 rounded-md border border-border bg-surface px-2 py-1.5 text-sm text-text" />
 				<button type="submit" class="cursor-pointer rounded-md bg-accent px-3 py-1.5 text-sm font-semibold text-white hover:brightness-105">Set budget</button>
 			</form>
+			{/if}
 		</section>
 	{:else}
 		<div class="panel p-5 text-muted">No cards yet — add one above (one per bank).</div>

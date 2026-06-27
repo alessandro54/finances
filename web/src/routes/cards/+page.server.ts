@@ -1,10 +1,15 @@
 import { api } from '$lib/api';
 import { getRates } from '$lib/server/fx';
+import { demoCards, demoCategories, demoStatuses } from '$lib/server/demo';
 import { fail } from '@sveltejs/kit';
 import type { BudgetStatus, Card } from '$lib/types';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ fetch }) => {
+export const load: PageServerLoad = async ({ fetch, locals }) => {
+	if (!locals.owner) {
+		return { cards: demoCards(), categories: demoCategories(), status: demoStatuses(), rates: await getRates(fetch) };
+	}
+
 	const [cards, categories, rates] = await Promise.all([
 		api<Card[]>('/api/cards'),
 		api<string[]>('/api/categories'),
@@ -19,8 +24,15 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	return { cards, categories, status, rates };
 };
 
+function requireOwner(locals: App.Locals) {
+	if (!locals.owner) return fail(403, { error: 'read-only demo' });
+	return null;
+}
+
 export const actions: Actions = {
-	saveCard: async ({ request }) => {
+	saveCard: async ({ request, locals }) => {
+		const denied = requireOwner(locals);
+		if (denied) return denied;
 		const f = await request.formData();
 		const bank = String(f.get('bank') ?? '').trim();
 		if (!bank) return fail(400, { error: 'bank required' });
@@ -36,7 +48,9 @@ export const actions: Actions = {
 		return { ok: true };
 	},
 
-	deleteCard: async ({ request }) => {
+	deleteCard: async ({ request, locals }) => {
+		const denied = requireOwner(locals);
+		if (denied) return denied;
 		const f = await request.formData();
 		const bank = String(f.get('bank') ?? '');
 		if (!bank) return fail(400, { error: 'bank required' });
@@ -44,7 +58,9 @@ export const actions: Actions = {
 		return { ok: true };
 	},
 
-	saveBudget: async ({ request }) => {
+	saveBudget: async ({ request, locals }) => {
+		const denied = requireOwner(locals);
+		if (denied) return denied;
 		const f = await request.formData();
 		const card = String(f.get('card') ?? '');
 		const category = String(f.get('category') ?? '');

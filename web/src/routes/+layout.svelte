@@ -5,7 +5,8 @@
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 
-	let { children } = $props();
+	let { children, data } = $props();
+	const owner = $derived(data?.owner ?? false);
 	const nav = [
 		{ href: '/', label: 'Transactions' },
 		{ href: '/cards', label: 'Cards' },
@@ -72,13 +73,29 @@
 			</a>
 		{/each}
 	</nav>
-	<button
-		class="ml-auto grid h-[34px] w-[34px] place-items-center rounded-[9px] border border-border bg-surface text-muted transition-colors hover:border-accent hover:text-text"
-		type="button"
-		onclick={toggleTheme}
-		aria-label="Toggle theme"
-		title="Toggle theme"
-	>
+	<div class="ml-auto flex items-center gap-2">
+		{#if owner}
+			<form method="POST" action="/login?/logout">
+				<button
+					type="submit"
+					class="rounded-[9px] border border-border bg-surface px-3 py-1.5 text-sm font-medium text-muted transition-colors hover:border-accent hover:text-text"
+					>Log out</button
+				>
+			</form>
+		{:else}
+			<a
+				href="/login"
+				class="rounded-[9px] bg-accent px-3 py-1.5 text-sm font-semibold text-white no-underline hover:brightness-105"
+				>Log in</a
+			>
+		{/if}
+		<button
+			class="grid h-[34px] w-[34px] place-items-center rounded-[9px] border border-border bg-surface text-muted transition-colors hover:border-accent hover:text-text"
+			type="button"
+			onclick={toggleTheme}
+			aria-label="Toggle theme"
+			title="Toggle theme"
+		>
 		{#if theme === 'dark'}
 			<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
 				<circle cx="12" cy="12" r="4" />
@@ -90,7 +107,14 @@
 			</svg>
 		{/if}
 	</button>
+	</div>
 </header>
+
+{#if !owner}
+	<div class="border-b border-warn-border bg-warn-bg px-6 py-2 text-center text-sm text-warn-text">
+		Demo view — synthetic data. <a href="/login" class="font-semibold underline">Log in</a> for the real dashboard.
+	</div>
+{/if}
 
 <main class="mx-auto max-w-[1000px] px-6 pb-12 pt-7">
 	{@render children()}

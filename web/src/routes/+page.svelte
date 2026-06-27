@@ -3,6 +3,7 @@
 	import { flip } from 'svelte/animate';
 	import { onMount } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
+	import { page } from '$app/state';
 	import { catDisplay, catColor } from '$lib/category';
 	import { fmtWhen, fmtMoney as fmt, money, toPEN, isForeign, setRates } from '$lib/format';
 	import PieChart from '$lib/components/PieChart.svelte';
@@ -14,6 +15,7 @@
 	let { data }: PageProps = $props();
 	// svelte-ignore state_referenced_locally
 	setRates(data.rates); // apply live FX before any money()/toPEN() render (set-once)
+	const owner = $derived(page.data.owner ?? false); // guests: read-only demo
 	let reviewOpen = $state(false);
 
 	// Animate row changes only after first paint (not the initial bulk load).
@@ -103,7 +105,7 @@
 	</label>
 </div>
 
-{#if flagged.length}
+{#if owner && flagged.length}
 	<button
 		onclick={() => (reviewOpen = true)}
 		transition:slide={{ duration: 200 }}
@@ -187,11 +189,18 @@
 						{/if}
 					</td>
 					<td>
-						<Select
-							value={t.category ?? ''}
-							options={data.categories}
-							onChange={(v) => recategorize(t.dedupe_id, v)}
-						/>
+						{#if owner}
+							<Select
+								value={t.category ?? ''}
+								options={data.categories}
+								onChange={(v) => recategorize(t.dedupe_id, v)}
+							/>
+						{:else}
+							<span class="inline-flex items-center gap-1.5 text-sm">
+								<span class="h-[9px] w-[9px] rounded-full" style="background: {catColor(t.category)}"></span>
+								{catDisplay(t.category)}
+							</span>
+						{/if}
 					</td>
 				</tr>
 			{:else}

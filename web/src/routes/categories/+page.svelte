@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
 	import { catColor, catDisplay, isOthers } from '$lib/category';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	const owner = $derived(page.data.owner ?? false); // guests: read-only demo
 	// "other"/null is the implicit Others bucket — not a managed category.
 	const cats = $derived(data.categories.filter((c) => !isOthers(c)));
 </script>
@@ -13,6 +15,7 @@
 		<h1 class="m-0 text-[1.4rem] font-semibold tracking-tight">Categories</h1>
 		<p class="mt-0.5 text-sm text-muted">{cats.length} categories</p>
 	</div>
+	{#if owner}
 	<form method="POST" action="?/add" use:enhance class="flex gap-2">
 		<input
 			name="name"
@@ -26,6 +29,7 @@
 			>Add</button
 		>
 	</form>
+	{/if}
 </div>
 
 <section class="panel max-w-[540px] overflow-hidden">
@@ -49,6 +53,7 @@
 					</td>
 					<td class="text-right text-muted">{data.counts[c] ?? 0}</td>
 					<td class="text-right">
+						{#if owner}
 						<form
 							method="POST"
 							action="?/remove"
@@ -64,6 +69,7 @@
 								>Delete</button
 							>
 						</form>
+						{/if}
 					</td>
 				</tr>
 			{:else}
