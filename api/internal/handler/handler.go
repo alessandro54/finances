@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -81,6 +82,17 @@ func fail(w http.ResponseWriter, err error) {
 
 func badRequest(w http.ResponseWriter, msg string) {
 	http.Error(w, msg, http.StatusBadRequest)
+}
+
+// pathParam reads a URL path param and percent-decodes it. chi does not decode
+// %XX in path segments, but dedupe_ids/categories contain ':' etc. that the web
+// sends via encodeURIComponent — so decode here to match stored values.
+func pathParam(r *http.Request, key string) string {
+	v := chi.URLParam(r, key)
+	if dec, err := url.PathUnescape(v); err == nil {
+		return dec
+	}
+	return v
 }
 
 func parseInt(s string, def int) int {

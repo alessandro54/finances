@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
 
 	"finances-api/internal/model"
 )
@@ -59,7 +58,7 @@ func (h *Handler) upsertCard(w http.ResponseWriter, r *http.Request) {
 
 // deleteCard removes a card and any budgets scoped to it.
 func (h *Handler) deleteCard(w http.ResponseWriter, r *http.Request) {
-	bank := chi.URLParam(r, "bank")
+	bank := pathParam(r, "bank")
 	ctx := r.Context()
 	if _, err := h.DB.NewDelete().Model((*model.Budget)(nil)).Where("card = ?", bank).Exec(ctx); err != nil {
 		fail(w, err)

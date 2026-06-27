@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
 
 	"finances-api/internal/model"
 )
@@ -46,7 +45,7 @@ func (h *Handler) createCategory(w http.ResponseWriter, r *http.Request) {
 // deleteCategory removes a category; transactions using it are set to NULL so they
 // fall under "Others" rather than dangling on a name that's no longer selectable.
 func (h *Handler) deleteCategory(w http.ResponseWriter, r *http.Request) {
-	name := chi.URLParam(r, "name")
+	name := pathParam(r, "name")
 	ctx := r.Context()
 	cleared, err := h.DB.NewUpdate().Model((*model.Transaction)(nil)).
 		Set("category = NULL").Where("category = ?", name).Exec(ctx)

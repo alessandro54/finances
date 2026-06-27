@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
 
 	"finances-api/internal/model"
 )
@@ -42,7 +41,7 @@ type patchTxBody struct {
 }
 
 func (h *Handler) patchTransaction(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id := pathParam(r, "id")
 	var b patchTxBody
 	if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
 		badRequest(w, "invalid body")
