@@ -60,19 +60,15 @@
 	const txCount = $derived(data.stats.by_currency.reduce((s, c) => s + c.count, 0));
 	const hasForeign = $derived(data.stats.by_currency.some((c) => isForeign(c.currency)));
 
-	// Charts mix currencies poorly — focus on the currency with the largest total.
-	const primary = $derived(
-		[...data.stats.by_currency].sort((a, b) => b.total - a.total)[0]?.currency ?? 'PEN'
-	);
+	// Charts roll every currency up to soles so dollars are included.
 	const categoryBars = $derived(
 		(() => {
-			// Fold null + "other" into a single Others slice.
 			const map = new Map<string, { value: number; color: string }>();
-			for (const c of data.stats.by_category.filter((c) => c.currency === primary)) {
-				const label = catDisplay(c.category);
+			for (const c of data.stats.by_category) {
+				const label = catDisplay(c.category); // folds null + "other" into Others
 				const cur = map.get(label);
-				if (cur) cur.value += c.total;
-				else map.set(label, { value: c.total, color: catColor(c.category) });
+				if (cur) cur.value += toPEN(c.total, c.currency);
+				else map.set(label, { value: toPEN(c.total, c.currency), color: catColor(c.category) });
 			}
 			return [...map.entries()]
 				.map(([label, v]) => ({ label, value: v.value, color: v.color }))
@@ -81,9 +77,14 @@
 		})()
 	);
 	const trendPoints = $derived(
-		data.stats.by_day
-			.filter((d) => d.currency === primary)
-			.map((d) => ({ date: (d.date ?? '').slice(5), value: d.total }))
+		(() => {
+			const map = new Map<string, number>(); // by_day is date-ordered → insertion order is chronological
+			for (const d of data.stats.by_day) {
+				const day = (d.date ?? '').slice(5);
+				map.set(day, (map.get(day) ?? 0) + toPEN(d.total, d.currency));
+			}
+			return [...map.entries()].map(([date, value]) => ({ date, value }));
+		})()
 	);
 </script>
 
@@ -139,13 +140,13 @@
 	<section class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
 		<div class="panel p-5 transition-transform hover:-translate-y-0.5">
 			<h2 class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
-				By category <span class="text-[0.78em] font-medium normal-case">{primary}</span>
+				By category <span class="text-[0.78em] font-medium normal-case">S/</span>
 			</h2>
 			<PieChart items={categoryBars} {fmt} />
 		</div>
 		<div class="panel p-5 transition-transform hover:-translate-y-0.5">
 			<h2 class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
-				Daily spend <span class="text-[0.78em] font-medium normal-case">{primary}</span>
+				Daily spend <span class="text-[0.78em] font-medium normal-case">S/</span>
 			</h2>
 			<DayBars points={trendPoints} {fmt} />
 		</div>

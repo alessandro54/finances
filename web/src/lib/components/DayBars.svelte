@@ -24,14 +24,10 @@
 		<div class="flex h-40 items-end gap-px">
 			{#each points as p (p.date)}
 				<div
-					class="group relative flex flex-1 justify-center"
+					class="min-h-px flex-1 rounded-t bg-accent/75 transition-[height,background-color] duration-300 hover:bg-accent"
+					style="height: {p.value > 0 ? Math.max((p.value / max) * 100, 3) : 0}%"
 					title="{p.date}: {fmt(p.value)}"
-				>
-					<div
-						class="w-full rounded-t bg-accent/75 transition-[height,background-color] duration-300 hover:bg-accent"
-						style="height: {p.value > 0 ? Math.max((p.value / max) * 100, 3) : 0}%"
-					></div>
-				</div>
+				></div>
 			{/each}
 		</div>
 		<div class="mt-1 flex justify-between text-[0.7rem] text-muted">
