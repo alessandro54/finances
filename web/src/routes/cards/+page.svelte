@@ -7,6 +7,14 @@
 	let { data }: PageProps = $props();
 	const cats = $derived(data.categories.filter((c) => !isOthers(c)));
 	let newMode = $state<'monthly' | 'days'>('monthly');
+
+	// cycle_end is exclusive (next cycle's start). The cycle's last day is end − 1.
+	function lastDay(end?: string): string {
+		if (!end) return '';
+		const d = new Date(end + 'T00:00:00');
+		d.setDate(d.getDate() - 1);
+		return d.toISOString().slice(0, 10);
+	}
 </script>
 
 <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
@@ -53,7 +61,7 @@
 			<input name="cycle_length_days" type="number" min="1" value="30" class="w-24 rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-sm text-text" />
 		</label>
 		<label class="flex flex-col gap-1 text-xs text-muted">
-			Last close date
+			Cycle start date
 			<input name="cycle_anchor" type="date" class="rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-sm text-text" />
 		</label>
 	{/if}
@@ -130,7 +138,7 @@
 
 			{#if st?.cycle_start}
 				<div class="mb-3 text-xs text-muted">
-					Current cycle: <span class="font-medium text-text">{st.cycle_start} → {st.cycle_end}</span>
+					Current cycle: <span class="font-medium text-text">{st.cycle_start} → {lastDay(st.cycle_end)}</span>
 				</div>
 			{/if}
 
