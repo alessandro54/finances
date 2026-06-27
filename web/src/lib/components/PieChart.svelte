@@ -1,53 +1,90 @@
 <script lang="ts">
+	import { Chart, Svg, Group, Pie, Arc } from 'layerchart';
+
 	type Item = { label: string; value: number; color: string };
 	let { items, fmt }: { items: Item[]; fmt: (n: number) => string } = $props();
 
-	const R = 60; // radius
-	const SW = 24; // stroke width (donut thickness)
-	const C = 2 * Math.PI * R;
 	const total = $derived(items.reduce((s, i) => s + i.value, 0));
 
-	// Each slice: stroke-dasharray segment on a circle, offset by running total.
-	const slices = $derived(
-		(() => {
-			let acc = 0;
-			return items.map((it) => {
-				const frac = total > 0 ? it.value / total : 0;
-				const seg = { ...it, frac, len: frac * C, offset: -acc * C };
-				acc += frac;
-				return seg;
-			});
-		})()
-	);
+	let hovered = $state<number | null>(null);
+	let mx = $state(0);
+	let my = $state(0);
+	let box = $state<HTMLDivElement>();
+
+	function track(e: PointerEvent) {
+		const r = box?.getBoundingClientRect();
+		if (!r) return;
+		mx = e.clientX - r.left;
+		my = e.clientY - r.top;
+	}
+
+	const active = $derived(hovered !== null ? items[hovered] : null);
+	const pct = $derived(active && total > 0 ? Math.round((active.value / total) * 100) : 0);
 </script>
 
 {#if total > 0}
 	<div class="flex flex-wrap items-center gap-5">
-		<svg class="shrink-0" viewBox="0 0 160 160" width="148" height="148" role="img" aria-label="Spend by category">
-			<g transform="rotate(-90 80 80)">
-				{#each slices as s (s.label)}
-					<circle
-						cx="80"
-						cy="80"
-						r={R}
-						fill="none"
-						stroke={s.color}
-						stroke-width={SW}
-						stroke-dasharray="{s.len} {C - s.len}"
-						stroke-dashoffset={s.offset}
-					/>
-				{/each}
-			</g>
-			<text x="80" y="76" text-anchor="middle" class="fill-muted uppercase [font-size:9px] [letter-spacing:0.05em]">Total</text>
-			<text x="80" y="92" text-anchor="middle" class="fill-text font-bold [font-size:13px]">{fmt(total)}</text>
-		</svg>
+		<div bind:this={box} class="relative h-[156px] w-[156px] shrink-0">
+			<Chart data={items} x="value">
+				<Svg center>
+					<Group center>
+						<Pie padAngle={0.02} let:arcs>
+							{#each arcs as arc, i (items[i].label)}
+								<Arc
+									startAngle={arc.startAngle}
+									endAngle={arc.endAngle}
+									innerRadius={48}
+									outerRadius={72}
+									cornerRadius={3}
+									fill={items[i].color}
+									fillOpacity={hovered === null || hovered === i ? 1 : 0.35}
+									data={items[i]}
+									onpointerenter={() => (hovered = i)}
+									onpointermove={track}
+									onpointerleave={() => (hovered = null)}
+									tweened
+									class="cursor-pointer transition-[fill-opacity] duration-150"
+								/>
+							{/each}
+						</Pie>
+					</Group>
+				</Svg>
+			</Chart>
+
+			<!-- center label: active slice when hovering, else total -->
+			<div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+				<span class="text-[0.6rem] uppercase tracking-wider text-muted">{active ? active.label : 'Total'}</span>
+				<span class="text-sm font-bold tabular-nums">{fmt(active ? active.value : total)}</span>
+			</div>
+
+			{#if active}
+				<div
+					class="pointer-events-none absolute z-50 whitespace-nowrap rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs shadow-[0_8px_30px_rgba(0,0,0,0.18)]"
+					style="left: {Math.min(mx + 12, 156 - 8)}px; top: {my + 12}px"
+				>
+					<div class="flex items-center gap-1.5 font-semibold">
+						<span class="h-[9px] w-[9px] rounded-full" style="background: {active.color}"></span>
+						{active.label}
+					</div>
+					<div class="mt-0.5 tabular-nums text-muted">{fmt(active.value)} · {pct}%</div>
+				</div>
+			{/if}
+		</div>
+
 		<ul class="m-0 flex min-w-[160px] flex-1 list-none flex-col gap-1.5 p-0">
-			{#each slices as s (s.label)}
-				<li class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 text-sm">
-					<span class="h-[9px] w-[9px] rounded-full" style="background: {s.color}"></span>
-					<span class="truncate text-text" title={s.label}>{s.label}</span>
-					<span class="tabular-nums text-muted">{Math.round(s.frac * 100)}%</span>
-					<span class="font-medium tabular-nums text-text">{fmt(s.value)}</span>
+			{#each items as it, i (it.label)}
+				<li
+					class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 rounded px-1 py-0.5 text-sm transition-colors {hovered ===
+					i
+						? 'bg-track'
+						: ''}"
+					onpointerenter={() => (hovered = i)}
+					onpointerleave={() => (hovered = null)}
+				>
+					<span class="h-[9px] w-[9px] rounded-full" style="background: {it.color}"></span>
+					<span class="truncate text-text" title={it.label}>{it.label}</span>
+					<span class="tabular-nums text-muted">{total > 0 ? Math.round((it.value / total) * 100) : 0}%</span>
+					<span class="font-medium tabular-nums text-text">{fmt(it.value)}</span>
 				</li>
 			{/each}
 		</ul>
