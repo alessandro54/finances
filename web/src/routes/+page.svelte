@@ -88,6 +88,21 @@
 			return [...map.entries()].map(([date, value]) => ({ date, value }));
 		})()
 	);
+
+	// Spend split per bank/card, rolled up to soles.
+	const bankBars = $derived(
+		(() => {
+			const map = new Map<string, number>();
+			for (const b of data.stats.by_bank) {
+				const label = b.bank ?? '—';
+				map.set(label, (map.get(label) ?? 0) + toPEN(b.total, b.currency));
+			}
+			return [...map.entries()]
+				.map(([label, value]) => ({ label, value, color: catColor(label) }))
+				.sort((a, b) => b.value - a.value);
+		})()
+	);
+	const bankMax = $derived(Math.max(1, ...bankBars.map((b) => b.value)));
 </script>
 
 <div class="mb-5 flex items-end justify-between gap-4">
@@ -117,10 +132,10 @@
 	</button>
 {/if}
 
-<section class="mb-4">
+<section class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
 	{#if data.stats.by_currency.length}
 		<div
-			class="panel flex flex-col gap-1 p-5 transition-transform hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(16,18,27,0.08)]"
+			class="panel flex flex-col justify-center gap-1 p-5 transition-transform hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(16,18,27,0.08)]"
 		>
 			<span class="text-xs font-semibold tracking-wide text-accent">Total spent</span>
 			<span class="text-[1.9rem] font-bold tabular-nums tracking-tight">
@@ -135,6 +150,31 @@
 		</div>
 	{:else}
 		<div class="panel p-5"><p class="text-muted">No transactions for this period.</p></div>
+	{/if}
+
+	{#if bankBars.length}
+		<div class="panel p-5 transition-transform hover:-translate-y-0.5">
+			<h2 class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
+				By bank <span class="text-[0.78em] font-medium normal-case">S/</span>
+			</h2>
+			<div class="flex flex-col gap-2.5">
+				{#each bankBars as b (b.label)}
+					<div class="flex items-center gap-3 text-sm">
+						<span class="flex w-24 shrink-0 items-center gap-2 truncate" title={b.label}>
+							<span class="h-[9px] w-[9px] shrink-0 rounded-full" style="background: {b.color}"></span>
+							<span class="truncate">{b.label}</span>
+						</span>
+						<div class="h-2.5 flex-1 overflow-hidden rounded-full bg-track">
+							<div
+								class="h-full rounded-full transition-[width] duration-500"
+								style="width: {(b.value / bankMax) * 100}%; background: {b.color}"
+							></div>
+						</div>
+						<span class="w-20 shrink-0 text-right font-medium tabular-nums">{fmt(b.value)}</span>
+					</div>
+				{/each}
+			</div>
+		</div>
 	{/if}
 </section>
 
@@ -154,6 +194,7 @@
 		</div>
 	</section>
 {/if}
+
 
 <section class="panel overflow-hidden">
 	<table class="w-full border-collapse">

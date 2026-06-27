@@ -37,7 +37,7 @@ func (h *Handler) stats(w http.ResponseWriter, r *http.Request) {
 	byCurrency := []currencyTotal{}
 	if err := h.DB.NewRaw(
 		`SELECT currency, COALESCE(SUM(amount),0.0) AS total, COUNT(*) AS count FROM transactions
-		 WHERE (? = '' OR strftime('%Y-%m', date) = ?) GROUP BY currency`, month, month,
+		 WHERE deleted_at IS NULL AND (? = '' OR strftime('%Y-%m', date) = ?) GROUP BY currency`, month, month,
 	).Scan(ctx, &byCurrency); err != nil {
 		fail(w, err)
 		return
@@ -46,7 +46,7 @@ func (h *Handler) stats(w http.ResponseWriter, r *http.Request) {
 	byCategory := []categoryTotal{}
 	if err := h.DB.NewRaw(
 		`SELECT category, currency, COALESCE(SUM(amount),0.0) AS total, COUNT(*) AS count FROM transactions
-		 WHERE (? = '' OR strftime('%Y-%m', date) = ?) GROUP BY category, currency ORDER BY total DESC`, month, month,
+		 WHERE deleted_at IS NULL AND (? = '' OR strftime('%Y-%m', date) = ?) GROUP BY category, currency ORDER BY total DESC`, month, month,
 	).Scan(ctx, &byCategory); err != nil {
 		fail(w, err)
 		return
@@ -55,7 +55,7 @@ func (h *Handler) stats(w http.ResponseWriter, r *http.Request) {
 	byBank := []bankTotal{}
 	if err := h.DB.NewRaw(
 		`SELECT bank, currency, COALESCE(SUM(amount),0.0) AS total FROM transactions
-		 WHERE (? = '' OR strftime('%Y-%m', date) = ?) GROUP BY bank, currency`, month, month,
+		 WHERE deleted_at IS NULL AND (? = '' OR strftime('%Y-%m', date) = ?) GROUP BY bank, currency`, month, month,
 	).Scan(ctx, &byBank); err != nil {
 		fail(w, err)
 		return
@@ -64,7 +64,7 @@ func (h *Handler) stats(w http.ResponseWriter, r *http.Request) {
 	byDay := []dayTotal{}
 	if err := h.DB.NewRaw(
 		`SELECT date, currency, COALESCE(SUM(amount),0.0) AS total FROM transactions
-		 WHERE (? = '' OR strftime('%Y-%m', date) = ?) GROUP BY date, currency ORDER BY date`, month, month,
+		 WHERE deleted_at IS NULL AND (? = '' OR strftime('%Y-%m', date) = ?) GROUP BY date, currency ORDER BY date`, month, month,
 	).Scan(ctx, &byDay); err != nil {
 		fail(w, err)
 		return

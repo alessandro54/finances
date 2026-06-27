@@ -29,6 +29,7 @@ func main() {
 	}
 
 	h := handler.New(bdb, cfg.APIToken)
+	h.StartDedupeSweeper(context.Background()) // periodic soft-delete of duplicate transactions
 	log.Printf("listening on :%s", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, h.Router()); err != nil {
 		log.Fatal(err)
