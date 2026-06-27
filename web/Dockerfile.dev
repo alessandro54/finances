@@ -1,14 +1,14 @@
-# Dev-only image: runs the SvelteKit dev server with HMR inside docker-compose.
-# Production deploys to Vercel (adapter-vercel) — this file is NOT used for deploy.
-FROM node:22-alpine
+# Dev-only image: runs the SvelteKit dev server with HMR inside docker-compose,
+# using Bun as the package manager + runtime. Production deploys to Vercel.
+FROM oven/bun:1-alpine
 WORKDIR /app
 
-# Install deps first for layer caching. The source is bind-mounted at runtime;
+# Install deps first for layer caching. Source is bind-mounted at runtime;
 # node_modules lives in an anonymous volume so the host dir doesn't clobber it.
-COPY package*.json ./
-RUN npm install
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
 
 COPY . .
 
 EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["bun", "run", "dev", "--", "--host", "0.0.0.0"]

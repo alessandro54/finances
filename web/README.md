@@ -3,14 +3,9 @@
 Minimal SvelteKit dashboard → Vercel. Talks to `finances-api` **server-side** (the API token
 never reaches the browser). Converts PEN/USD client-side.
 
-## Init (once)
-```bash
-cd web
-npm create svelte@latest .   # Skeleton project, TypeScript, no extras
-npm install
-npm i -D @sveltejs/adapter-vercel
-```
-Set the Vercel adapter in `svelte.config.js` (`import adapter from '@sveltejs/adapter-vercel'`).
+Tooling: **Bun** (package manager + runtime). `bun install`, `bun run dev|check|build`.
+Adapter config lives in `vite.config.ts` (adapter-vercel). The docker-compose dev
+container (`Dockerfile.dev`) runs `oven/bun` with HMR; Vercel auto-detects `bun.lock`.
 
 ## Env (Vercel project settings → Environment Variables; local: `web/.env`)
 ```

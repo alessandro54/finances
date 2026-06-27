@@ -25,7 +25,7 @@ go test ./...         # unit tests (in-memory SQLite via modernc.org/sqlite; no 
 ```
 Config is loaded + validated in `internal/config`. Tests live in `api/tests/` (black-box): they open an in-memory SQLite, run the real Bun migrations, and exercise the cycle-window + budget-status SQL via the exported `handler.CycleWindow` / `handler.BudgetStatusCycleSQL`.
 
-Web (run from `web/`): `npm run dev` (needs `web/.env`: API_BASE, API_TOKEN) · `npm run check` (svelte-check) · `npm run build` (vercel adapter).
+Web (run from `web/`, **Bun**): `bun run dev` (needs `web/.env`: API_BASE, API_TOKEN) · `bun run check` (svelte-check) · `bun run build` (vercel adapter). Two unrelated "Bun"s in this repo: the **Go Bun ORM** (api) and **Bun the JS runtime** (web).
 
 ## API architecture notes
 
