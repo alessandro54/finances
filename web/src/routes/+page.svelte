@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
+	import { fly, slide } from 'svelte/transition';
+	import { flip } from 'svelte/animate';
+	import { onMount } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { catDisplay, catColor } from '$lib/category';
 	import { fmtWhen, fmtMoney as fmt } from '$lib/format';
@@ -11,6 +13,12 @@
 
 	let { data }: PageProps = $props();
 	let reviewOpen = $state(false);
+
+	// Animate row changes only after first paint (not the initial bulk load).
+	let ready = $state(false);
+	onMount(() => {
+		ready = true;
+	});
 
 	// Rows reviewed/recategorized this session — un-highlight instantly before reload.
 	let reviewedLocal = $state<Record<string, boolean>>({});
@@ -142,6 +150,9 @@
 		<tbody class="[&>tr:last-child>td]:border-b-0">
 			{#each data.transactions as t (t.dedupe_id)}
 				<tr
+					animate:flip={{ duration: ready ? 320 : 0 }}
+					in:fly={{ y: -12, duration: ready ? 280 : 0 }}
+					out:slide={{ duration: ready ? 220 : 0 }}
 					title={needsReview(t) ? `Needs review (${t.confidence} confidence)` : ''}
 					class="align-middle transition-[background-color,box-shadow] duration-300 [&>td]:border-b [&>td]:border-border [&>td]:px-4 [&>td]:py-3 {needsReview(
 						t
