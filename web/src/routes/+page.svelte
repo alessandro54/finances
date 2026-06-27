@@ -4,14 +4,16 @@
 	import { onMount } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { catDisplay, catColor } from '$lib/category';
-	import { fmtWhen, fmtMoney as fmt, money, toPEN, isForeign } from '$lib/format';
+	import { fmtWhen, fmtMoney as fmt, money, toPEN, isForeign, setRates } from '$lib/format';
 	import PieChart from '$lib/components/PieChart.svelte';
-	import TrendChart from '$lib/components/TrendChart.svelte';
+	import DayBars from '$lib/components/DayBars.svelte';
 	import Select from '$lib/components/Select.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	// svelte-ignore state_referenced_locally
+	setRates(data.rates); // apply live FX before any money()/toPEN() render (set-once)
 	let reviewOpen = $state(false);
 
 	// Animate row changes only after first paint (not the initial bulk load).
@@ -145,7 +147,7 @@
 			<h2 class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
 				Daily spend <span class="text-[0.78em] font-medium normal-case">{primary}</span>
 			</h2>
-			<TrendChart points={trendPoints} {fmt} />
+			<DayBars points={trendPoints} {fmt} />
 		</div>
 	</section>
 {/if}

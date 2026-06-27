@@ -19,8 +19,15 @@ export function fmtMoney(n: number | null): string {
 	return (n ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// Approx FX → PEN. Swap for a live rate (e.g. SUNAT) later.
+// FX → PEN. Seeded with fallbacks; setRates() updates from the live API (see lib/server/fx).
 const FX_TO_PEN: Record<string, number> = { PEN: 1, USD: 3.75, EUR: 4.05 };
+
+/** Update live rates (USD/EUR → PEN). Called from pages with server-loaded rates. */
+export function setRates(r: { USD?: number; EUR?: number } | undefined | null): void {
+	if (!r) return;
+	if (r.USD) FX_TO_PEN.USD = r.USD;
+	if (r.EUR) FX_TO_PEN.EUR = r.EUR;
+}
 
 /** Currency symbol: PEN → "S/", USD → "$", EUR → "€". */
 export function sym(currency: string | null | undefined): string {

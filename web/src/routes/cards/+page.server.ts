@@ -1,12 +1,14 @@
 import { api } from '$lib/api';
+import { getRates } from '$lib/server/fx';
 import { fail } from '@sveltejs/kit';
 import type { BudgetStatus, Card } from '$lib/types';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
-	const [cards, categories] = await Promise.all([
+export const load: PageServerLoad = async ({ fetch }) => {
+	const [cards, categories, rates] = await Promise.all([
 		api<Card[]>('/api/cards'),
-		api<string[]>('/api/categories')
+		api<string[]>('/api/categories'),
+		getRates(fetch)
 	]);
 	// Per-card current-cycle budget status (spend vs limit over the billing cycle).
 	const statuses = await Promise.all(
@@ -14,7 +16,7 @@ export const load: PageServerLoad = async () => {
 	);
 	const status: Record<string, BudgetStatus> = {};
 	cards.forEach((c, i) => (status[c.bank] = statuses[i]));
-	return { cards, categories, status };
+	return { cards, categories, status, rates };
 };
 
 export const actions: Actions = {

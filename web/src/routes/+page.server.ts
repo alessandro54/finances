@@ -1,17 +1,19 @@
 import { api } from '$lib/api';
+import { getRates } from '$lib/server/fx';
 import { fail } from '@sveltejs/kit';
 import type { Stats, Transaction } from '$lib/types';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ url, fetch }) => {
 	const month = url.searchParams.get('month') ?? '';
 	const qs = month ? `?month=${month}` : '';
-	const [stats, transactions, categories] = await Promise.all([
+	const [stats, transactions, categories, rates] = await Promise.all([
 		api<Stats>(`/api/stats${qs}`),
 		api<Transaction[]>(`/api/transactions${qs}${qs ? '&' : '?'}limit=200`),
-		api<string[]>('/api/categories')
+		api<string[]>('/api/categories'),
+		getRates(fetch)
 	]);
-	return { month, stats, transactions, categories };
+	return { month, stats, transactions, categories, rates };
 };
 
 export const actions: Actions = {

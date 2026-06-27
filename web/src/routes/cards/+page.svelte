@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { catColor, catDisplay, isOthers } from '$lib/category';
-	import { fmtMoney as fmt, money } from '$lib/format';
+	import { fmtMoney as fmt, money, setRates } from '$lib/format';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	// svelte-ignore state_referenced_locally
+	setRates(data.rates);
 	const cats = $derived(data.categories.filter((c) => !isOthers(c)));
 	let newMode = $state<'monthly' | 'days'>('monthly');
 
