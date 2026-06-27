@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/geist'; /* Vercel's Geist, self-hosted */
 
 /* dark mode is driven by data-theme on <html> (set pre-paint in app.html) */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
@@ -49,6 +50,7 @@
 	--color-warn-border: var(--warn-border);
 	--color-warn-text: var(--warn-text);
 	--radius-card: 12px;
+	--font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 /* The one repeated surface (cards, table container, modal). */
@@ -61,7 +63,7 @@
 body {
 	background-color: var(--bg);
 	color: var(--text);
-	font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+	font-family: var(--font-sans);
 	-webkit-font-smoothing: antialiased;
 	transition: background-color 0.2s ease, color 0.2s ease;
 }
