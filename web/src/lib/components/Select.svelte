@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { catColor, catDisplay, OTHERS } from '$lib/category';
+	import { catColor, catDisplay, isOthers, OTHERS } from '$lib/category';
 
 	let {
 		value,
@@ -11,7 +11,8 @@
 	let open = $state(false);
 	let root: HTMLDivElement;
 
-	const choices = $derived(['', ...options]);
+	// '' is the single "Others" choice; drop any 'other'/'others' option that would duplicate it.
+	const choices = $derived(['', ...options.filter((o) => !isOthers(o))]);
 
 	function pick(v: string) {
 		open = false;

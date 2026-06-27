@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { catColor, catDisplay } from '$lib/category';
+	import { catColor, catDisplay, isOthers } from '$lib/category';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	// "other"/null is the implicit Others bucket — not a managed category.
+	const cats = $derived(data.categories.filter((c) => !isOthers(c)));
 </script>
 
 <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
 	<div>
 		<h1 class="m-0 text-[1.4rem] font-semibold tracking-tight">Categories</h1>
-		<p class="mt-0.5 text-sm text-muted">{data.categories.length} categories</p>
+		<p class="mt-0.5 text-sm text-muted">{cats.length} categories</p>
 	</div>
 	<form method="POST" action="?/add" use:enhance class="flex gap-2">
 		<input
@@ -38,7 +40,7 @@
 			</tr>
 		</thead>
 		<tbody class="[&>tr:last-child>td]:border-b-0">
-			{#each data.categories as c (c)}
+			{#each cats as c (c)}
 				<tr class="transition-colors hover:bg-bg [&>td]:border-b [&>td]:border-border [&>td]:px-4 [&>td]:py-3">
 					<td class="flex items-center gap-2 font-medium">
 						<span class="inline-block h-[9px] w-[9px] shrink-0 rounded-full" style="background: {catColor(c)}"></span>{catDisplay(c)}

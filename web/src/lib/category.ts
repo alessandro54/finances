@@ -2,14 +2,21 @@
 
 export const OTHERS = 'Others';
 
+/** True for the uncategorized bucket: null, blank, or the AI's "other"/"others" slug. */
+export function isOthers(c: string | null | undefined): boolean {
+	if (!c) return true;
+	const s = c.trim().toLowerCase();
+	return s === '' || s === 'other' || s === 'others';
+}
+
 /** Raw display label for a possibly-null/blank category. */
 export function catLabel(c: string | null | undefined): string {
-	return c && c.trim() ? c : OTHERS;
+	return isOthers(c) ? OTHERS : (c as string);
 }
 
 /** Capitalized label for display ("food & drink" → "Food & Drink"). */
 export function catDisplay(c: string | null | undefined): string {
-	return catLabel(c).replace(/\b\w/g, (m) => m.toUpperCase());
+	return isOthers(c) ? OTHERS : (c as string).replace(/\b\w/g, (m) => m.toUpperCase());
 }
 
 // A small, cohesive palette for category accents (indigo → teal → amber range).
@@ -28,8 +35,8 @@ const PALETTE = [
 
 /** Deterministic color for a category label (stable across renders). */
 export function catColor(c: string | null | undefined): string {
-	const label = catLabel(c);
-	if (label === OTHERS) return '#94a3b8'; // slate — neutral bucket
+	if (isOthers(c)) return '#94a3b8'; // slate — neutral bucket
+	const label = c as string;
 	let h = 0;
 	for (let i = 0; i < label.length; i++) h = (h * 31 + label.charCodeAt(i)) >>> 0;
 	return PALETTE[h % PALETTE.length];

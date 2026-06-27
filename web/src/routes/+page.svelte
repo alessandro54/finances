@@ -48,11 +48,20 @@
 		[...data.stats.by_currency].sort((a, b) => b.total - a.total)[0]?.currency ?? 'PEN'
 	);
 	const categoryBars = $derived(
-		data.stats.by_category
-			.filter((c) => c.currency === primary)
-			.map((c) => ({ label: catDisplay(c.category), value: c.total, color: catColor(c.category) }))
-			.sort((a, b) => b.value - a.value)
-			.slice(0, 8)
+		(() => {
+			// Fold null + "other" into a single Others slice.
+			const map = new Map<string, { value: number; color: string }>();
+			for (const c of data.stats.by_category.filter((c) => c.currency === primary)) {
+				const label = catDisplay(c.category);
+				const cur = map.get(label);
+				if (cur) cur.value += c.total;
+				else map.set(label, { value: c.total, color: catColor(c.category) });
+			}
+			return [...map.entries()]
+				.map(([label, v]) => ({ label, value: v.value, color: v.color }))
+				.sort((a, b) => b.value - a.value)
+				.slice(0, 8);
+		})()
 	);
 	const trendPoints = $derived(
 		data.stats.by_day
