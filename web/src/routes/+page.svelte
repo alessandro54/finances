@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { fly, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { onMount } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { catDisplay, catColor } from '$lib/category';
 	import { fmtWhen, fmtMoney as fmt, money, toPEN, isForeign, setRates } from '$lib/format';
+	import { bestCardOn, todayLima } from '$lib/cycle';
 	import PieChart from '$lib/components/PieChart.svelte';
 	import DayBars from '$lib/components/DayBars.svelte';
+	import FleetCalendar from '$lib/components/FleetCalendar.svelte';
 	import Select from '$lib/components/Select.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import type { PageProps } from './$types';
@@ -22,6 +24,23 @@
 	let ready = $state(false);
 	onMount(() => {
 		ready = true;
+	});
+
+	// Flash rows that arrive live (e.g. a Telegram capture pushed via SSE).
+	let knownIds = new Set<string>(); // plain bookkeeping (non-reactive)
+	let firstLoad = true;
+	let justAdded = $state<Set<string>>(new Set());
+	$effect(() => {
+		const ids = data.transactions.map((t) => t.dedupe_id);
+		if (!firstLoad) {
+			const fresh = ids.filter((id) => !knownIds.has(id));
+			if (fresh.length) {
+				justAdded = new Set(fresh);
+				setTimeout(() => (justAdded = new Set()), 2200);
+			}
+		}
+		knownIds = new Set(ids);
+		firstLoad = false;
 	});
 
 	// Rows reviewed/recategorized this session — un-highlight instantly before reload.
@@ -103,153 +122,175 @@
 		})()
 	);
 	const bankMax = $derived(Math.max(1, ...bankBars.map((b) => b.value)));
+
+	// Day-only planner glance for small/short screens (full calendar shown on lg+).
+	const bestToday = $derived(data.cards?.length ? bestCardOn(data.cards, todayLima()) : null);
+	const fmtD = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 </script>
 
-<div class="mb-5 flex items-end justify-between gap-4">
-	<div>
-		<h1 class="m-0 text-[1.4rem] font-semibold tracking-tight">Transactions</h1>
-		<p class="mt-0.5 text-sm text-muted">{data.month || 'All time'}</p>
+<div class="flex flex-col gap-3 md:h-full">
+	<div class="flex items-end justify-between gap-4">
+		<div>
+			<h1 class="m-0 text-xl font-semibold tracking-tight">Transactions</h1>
+			<p class="mt-0.5 text-xs text-muted">{data.month || 'All time'} · {txCount} transactions</p>
+		</div>
+		<label>
+			<input
+				type="month"
+				value={data.month}
+				oninput={onMonth}
+				class="rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-sm text-text"
+			/>
+		</label>
 	</div>
-	<label>
-		<input
-			type="month"
-			value={data.month}
-			oninput={onMonth}
-			class="rounded-[9px] border border-border bg-surface px-2.5 py-1.5 text-text"
-		/>
-	</label>
-</div>
 
-{#if owner && flagged.length}
-	<button
-		onclick={() => (reviewOpen = true)}
-		transition:slide={{ duration: 200 }}
-		class="mb-4 flex w-full items-center justify-between gap-4 rounded-[10px] border border-warn-border bg-warn-bg px-4 py-2.5 text-left font-semibold text-warn-text"
-	>
-		<span class="flex items-center gap-2"><span>⚠</span>
-			{flagged.length} transaction{flagged.length > 1 ? 's' : ''} need review</span>
-		<span class="whitespace-nowrap">Review →</span>
-	</button>
-{/if}
-
-<section class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-	{#if data.stats.by_currency.length}
-		<div
-			class="panel flex flex-col justify-center gap-1 p-5 transition-transform hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(16,18,27,0.08)]"
+	{#if owner && flagged.length}
+		<button
+			onclick={() => (reviewOpen = true)}
+			transition:slide={{ duration: 200 }}
+			class="flex w-full shrink-0 items-center justify-between gap-4 rounded-[10px] border border-warn-border bg-warn-bg px-4 py-2 text-left text-sm font-semibold text-warn-text"
 		>
-			<span class="text-xs font-semibold tracking-wide text-accent">Total spent</span>
-			<span class="text-[1.9rem] font-bold tabular-nums tracking-tight">
-				{hasForeign ? '≈ ' : ''}S/ {fmt(totalPEN)}
-			</span>
-			<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
-				{#each data.stats.by_currency as c}
-					<span>{money(c.total, c.currency)}</span>
-				{/each}
-				<span>· {txCount} transactions</span>
-			</div>
-		</div>
-	{:else}
-		<div class="panel p-5"><p class="text-muted">No transactions for this period.</p></div>
+			<span class="flex items-center gap-2"><span>⚠</span>
+				{flagged.length} transaction{flagged.length > 1 ? 's' : ''} need review</span>
+			<span class="whitespace-nowrap">Review →</span>
+		</button>
 	{/if}
 
-	{#if bankBars.length}
-		<div class="panel p-5 transition-transform hover:-translate-y-0.5">
-			<h2 class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
-				By bank <span class="text-[0.78em] font-medium normal-case">S/</span>
-			</h2>
-			<div class="flex flex-col gap-2.5">
-				{#each bankBars as b (b.label)}
-					<div class="flex items-center gap-3 text-sm">
-						<span class="flex w-24 shrink-0 items-center gap-2 truncate" title={b.label}>
-							<span class="h-[9px] w-[9px] shrink-0 rounded-full" style="background: {b.color}"></span>
-							<span class="truncate">{b.label}</span>
-						</span>
-						<div class="h-2.5 flex-1 overflow-hidden rounded-full bg-track">
-							<div
-								class="h-full rounded-full transition-[width] duration-500"
-								style="width: {(b.value / bankMax) * 100}%; background: {b.color}"
-							></div>
-						</div>
-						<span class="w-20 shrink-0 text-right font-medium tabular-nums">{fmt(b.value)}</span>
+	<!-- Unified grid: analytics on the left, transactions as a tall right rail. -->
+	<div class="grid gap-3 md:min-h-0 md:flex-1 md:grid-cols-2 md:grid-rows-[auto_auto_minmax(0,1fr)]">
+		<!-- Overview: total spent + by-bank in one panel -->
+		<div class="panel flex min-w-0 flex-col gap-3 overflow-auto p-4 md:col-start-1 md:row-start-1">
+			{#if data.stats.by_currency.length}
+				<div class="flex flex-col gap-0.5">
+					<span class="eyebrow text-accent">Total spent</span>
+					<span class="text-gradient text-[1.7rem] font-extrabold tabular-nums tracking-tight">{hasForeign ? '≈ ' : ''}S/ {fmt(totalPEN)}</span>
+					<div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted">
+						{#each data.stats.by_currency as c}<span>{money(c.total, c.currency)}</span>{/each}
 					</div>
-				{/each}
-			</div>
-		</div>
-	{/if}
-</section>
+				</div>
+			{:else}
+				<p class="text-sm text-muted">No transactions for this period.</p>
+			{/if}
 
-{#if categoryBars.length || trendPoints.length}
-	<section class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-		<div class="panel p-5 transition-transform hover:-translate-y-0.5">
-			<h2 class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
-				By category <span class="text-[0.78em] font-medium normal-case">S/</span>
-			</h2>
-			<PieChart items={categoryBars} {fmt} />
+			{#if bankBars.length}
+				<div class="flex flex-col gap-1.5 border-t border-border pt-2.5">
+					<h3 class="text-[0.68rem] font-semibold uppercase tracking-wider text-muted">By bank <span class="normal-case">S/</span></h3>
+					{#each bankBars as b (b.label)}
+						<div class="flex items-center gap-2 text-xs">
+							<span class="flex w-16 shrink-0 items-center gap-1.5 truncate" title={b.label}>
+								<span class="h-2 w-2 shrink-0 rounded-full" style="background: {b.color}"></span>
+								<span class="truncate">{b.label}</span>
+							</span>
+							<div class="rail h-2.5 flex-1 overflow-hidden rounded-[3px]">
+								<div class="h-full rounded-[2px] transition-[width] duration-500" style="width: {(b.value / bankMax) * 100}%; background: color-mix(in srgb, {b.color} 16%, transparent); border: 1px solid {b.color}"></div>
+							</div>
+							<span class="w-14 shrink-0 text-right font-medium tabular-nums">{fmt(b.value)}</span>
+						</div>
+					{/each}
+				</div>
+			{/if}
 		</div>
-		<div class="panel p-5 transition-transform hover:-translate-y-0.5">
-			<h2 class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
-				Daily spend <span class="text-[0.78em] font-medium normal-case">S/</span>
+
+		{#if categoryBars.length}
+			<div class="panel flex min-w-0 flex-col justify-center overflow-auto p-4 md:col-start-2 md:row-start-1">
+				<h2 class="mb-2.5 flex items-center gap-1.5 text-[0.7rem] font-semibold uppercase tracking-wider text-muted">By category <span class="text-[0.78em] font-medium normal-case">S/</span></h2>
+				<PieChart items={categoryBars} {fmt} />
+			</div>
+		{/if}
+
+		{#if trendPoints.length}
+			<div class="panel flex min-w-0 flex-col justify-center overflow-auto p-4 md:col-start-1 md:row-start-2">
+				<h2 class="mb-2.5 flex items-center gap-1.5 text-[0.7rem] font-semibold uppercase tracking-wider text-muted">Daily spend <span class="text-[0.78em] font-medium normal-case">S/</span></h2>
+				<DayBars points={trendPoints} transactions={data.transactions} {fmt} />
+			</div>
+		{/if}
+
+		<section class="panel flex min-h-0 flex-col overflow-hidden p-4 md:col-start-1 md:row-start-3 md:min-h-0">
+			<h2 class="mb-3 flex shrink-0 items-center justify-between text-[0.7rem] font-semibold uppercase tracking-wider text-muted">
+				<span>Planner — best card<span class="hidden md:inline"> by day</span></span>
+				<a href="/planner" class="normal-case text-accent no-underline hover:underline">details →</a>
 			</h2>
-			<DayBars points={trendPoints} transactions={data.transactions} {fmt} />
+			{#if data.cards?.length}
+				<!-- Full month calendar on tablet+; a compact "today" card on phones. -->
+				<div class="hidden min-h-0 flex-1 md:block">
+					<FleetCalendar cards={data.cards} transactions={data.transactions} {fmt} />
+				</div>
+				{#if bestToday}
+					<div class="flex flex-col gap-1.5 md:hidden">
+						<div class="flex items-center gap-2 text-sm">
+							<span class="h-[9px] w-[9px] shrink-0 rounded-full" style="background: {catColor(bestToday.card.bank)}"></span>
+							💳 Charge <span class="font-semibold">{bestToday.card.name || bestToday.card.bank}</span> today
+							<span class="text-accent">· {bestToday.runway}d</span>
+						</div>
+						<div class="text-xs text-muted">interest-free, bills {fmtD(bestToday.close)}</div>
+						<a href="/planner" class="mt-1 text-xs text-accent no-underline hover:underline">Open full planner →</a>
+					</div>
+				{/if}
+			{:else}
+				<p class="text-sm text-muted">No cards yet. <a href="/cards" class="text-accent underline">Add one</a> to plan spending.</p>
+			{/if}
+		</section>
+
+		<section class="panel flex min-h-0 flex-col overflow-hidden md:col-start-2 md:row-start-2 md:row-span-2">
+			<div class="min-h-0 flex-1 overflow-auto">
+			<table class="w-full border-collapse">
+				<thead>
+					<tr class="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:border-b [&>th]:border-border [&>th]:bg-surface [&>th]:px-4 [&>th]:py-2 [&>th]:text-left [&>th]:text-[0.68rem] [&>th]:font-semibold [&>th]:uppercase [&>th]:tracking-wide [&>th]:text-muted">
+						<th>Date</th>
+						<th>Merchant</th>
+						<th>Bank</th>
+						<th class="!text-right">Amount</th>
+						<th>Category</th>
+					</tr>
+				</thead>
+				<tbody class="[&>tr:last-child>td]:border-b-0">
+					{#each data.transactions as t (t.dedupe_id)}
+						<tr
+							animate:flip={{ duration: ready ? 360 : 0 }}
+							in:slide={{ duration: ready ? 420 : 0 }}
+							out:slide={{ duration: ready ? 220 : 0 }}
+							title={needsReview(t) ? `Needs review (${t.confidence} confidence)` : ''}
+							class="align-middle text-sm transition-[background-color,box-shadow] duration-300 [&>td]:border-b [&>td]:border-border [&>td]:px-4 [&>td]:py-2 {justAdded.has(
+								t.dedupe_id
+							)
+								? 'tx-new'
+								: needsReview(t)
+									? 'bg-warn-bg shadow-[inset_3px_0_0_var(--warn-border)]'
+									: 'hover:bg-bg'}"
+						>
+							<td class="whitespace-nowrap text-muted">{fmtWhen(t.date, t.time)}</td>
+							<td class="font-medium">{t.merchant_clean || t.merchant || '—'}</td>
+							<td class="text-muted">{t.bank ?? ''}</td>
+							<td class="text-right tabular-nums">
+								<div class="font-semibold">{money(t.amount, t.currency)}</div>
+								{#if isForeign(t.currency)}
+									<div class="text-xs text-muted">≈ S/ {fmt(toPEN(t.amount, t.currency))}</div>
+								{/if}
+							</td>
+							<td>
+								{#if owner}
+									<Select
+										value={t.category ?? ''}
+										options={data.categories}
+										onChange={(v) => recategorize(t.dedupe_id, v)}
+									/>
+								{:else}
+									<span class="inline-flex items-center gap-1.5 text-sm">
+										<span class="h-2.5 w-2.5 rounded-full" style="border: 1.5px solid {catColor(t.category)}"></span>
+										{catDisplay(t.category)}
+									</span>
+								{/if}
+							</td>
+						</tr>
+					{:else}
+						<tr><td colspan="5" class="px-4 py-3 text-center text-muted">No transactions.</td></tr>
+					{/each}
+				</tbody>
+			</table>
 		</div>
 	</section>
-{/if}
-
-
-<section class="panel overflow-hidden">
-	<table class="w-full border-collapse">
-		<thead>
-			<tr class="[&>th]:border-b [&>th]:border-border [&>th]:bg-surface [&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:text-xs [&>th]:font-semibold [&>th]:uppercase [&>th]:tracking-wide [&>th]:text-muted">
-				<th>Date</th>
-				<th>Merchant</th>
-				<th>Bank</th>
-				<th class="!text-right">Amount</th>
-				<th>Category</th>
-			</tr>
-		</thead>
-		<tbody class="[&>tr:last-child>td]:border-b-0">
-			{#each data.transactions as t (t.dedupe_id)}
-				<tr
-					animate:flip={{ duration: ready ? 320 : 0 }}
-					in:fly={{ y: -12, duration: ready ? 280 : 0 }}
-					out:slide={{ duration: ready ? 220 : 0 }}
-					title={needsReview(t) ? `Needs review (${t.confidence} confidence)` : ''}
-					class="align-middle transition-[background-color,box-shadow] duration-300 [&>td]:border-b [&>td]:border-border [&>td]:px-4 [&>td]:py-3 {needsReview(
-						t
-					)
-						? 'bg-warn-bg shadow-[inset_3px_0_0_var(--warn-border)]'
-						: 'hover:bg-bg'}"
-				>
-					<td class="whitespace-nowrap text-muted">{fmtWhen(t.date, t.time)}</td>
-					<td class="font-medium">{t.merchant_clean || t.merchant || '—'}</td>
-					<td class="text-muted">{t.bank ?? ''}</td>
-					<td class="text-right tabular-nums">
-						<div class="font-semibold">{money(t.amount, t.currency)}</div>
-						{#if isForeign(t.currency)}
-							<div class="text-xs text-muted">≈ S/ {fmt(toPEN(t.amount, t.currency))}</div>
-						{/if}
-					</td>
-					<td>
-						{#if owner}
-							<Select
-								value={t.category ?? ''}
-								options={data.categories}
-								onChange={(v) => recategorize(t.dedupe_id, v)}
-							/>
-						{:else}
-							<span class="inline-flex items-center gap-1.5 text-sm">
-								<span class="h-[9px] w-[9px] rounded-full" style="background: {catColor(t.category)}"></span>
-								{catDisplay(t.category)}
-							</span>
-						{/if}
-					</td>
-				</tr>
-			{:else}
-				<tr><td colspan="5" class="px-4 py-3 text-center text-muted">No transactions.</td></tr>
-			{/each}
-		</tbody>
-	</table>
-</section>
+	</div>
+</div>
 
 <Modal bind:open={reviewOpen} title="Needs review">
 	{#if flagged.length}
@@ -290,3 +331,20 @@
 		<p class="mb-3 text-sm text-muted">All clear — nothing to review. 🎉</p>
 	{/if}
 </Modal>
+
+<style>
+	/* New row arrives via SSE: brief accent flash + left bar, then settles. */
+	:global(tr.tx-new) {
+		animation: tx-flash 2.2s ease-out;
+	}
+	@keyframes tx-flash {
+		0% {
+			background-color: color-mix(in srgb, var(--accent) 24%, transparent);
+			box-shadow: inset 3px 0 0 var(--accent);
+		}
+		100% {
+			background-color: transparent;
+			box-shadow: inset 3px 0 0 transparent;
+		}
+	}
+</style>

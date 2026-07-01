@@ -1,8 +1,8 @@
 import { api } from '$lib/api';
 import { getRates } from '$lib/server/fx';
-import { demoTransactions, demoStats, demoCategories } from '$lib/server/demo';
+import { demoTransactions, demoStats, demoCategories, demoCards } from '$lib/server/demo';
 import { fail } from '@sveltejs/kit';
-import type { Stats, Transaction } from '$lib/types';
+import type { Card, Stats, Transaction } from '$lib/types';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ url, fetch, locals }) => {
@@ -16,18 +16,20 @@ export const load: PageServerLoad = async ({ url, fetch, locals }) => {
 			stats: demoStats(month, transactions),
 			transactions,
 			categories: demoCategories(),
+			cards: demoCards(),
 			rates: await getRates(fetch)
 		};
 	}
 
 	const qs = month ? `?month=${month}` : '';
-	const [stats, transactions, categories, rates] = await Promise.all([
+	const [stats, transactions, categories, cards, rates] = await Promise.all([
 		api<Stats>(`/api/stats${qs}`),
 		api<Transaction[]>(`/api/transactions${qs}${qs ? '&' : '?'}limit=200`),
 		api<string[]>('/api/categories'),
+		api<Card[]>('/api/cards'),
 		getRates(fetch)
 	]);
-	return { month, stats, transactions, categories, rates };
+	return { month, stats, transactions, categories, cards, rates };
 };
 
 export const actions: Actions = {

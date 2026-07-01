@@ -1,36 +1,45 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/geist'; /* Vercel's Geist, self-hosted */
+@import '@fontsource-variable/space-grotesk'; /* display/UI — web3 geometric */
+@import '@fontsource-variable/jetbrains-mono'; /* numbers/tickers — terminal mono */
 
 /* dark mode is driven by data-theme on <html> (set pre-paint in app.html) */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /* Design tokens — single source of truth for both themes. */
 :root {
-	--bg: #f7f8fa;
+	--bg: #f6f7fa;
 	--surface: #ffffff;
-	--border: #e8eaef;
-	--text: #1a1d24;
-	--text-muted: #7c828e;
-	--track: #eef0f4;
-	--accent: #6366f1;
-	--accent-2: #8b5cf6;
-	--shadow: 0 1px 2px rgba(16, 18, 27, 0.04), 0 4px 16px rgba(16, 18, 27, 0.04);
-	--header-bg: rgba(255, 255, 255, 0.85);
+	--border: #e6e8ef;
+	--text: #14171f;
+	--text-muted: #6b7280;
+	--track: #eceef4;
+	--accent: #6d5cff;
+	--accent-2: #06b6d4;
+	--shadow: 0 1px 2px rgba(16, 18, 27, 0.04), 0 4px 16px rgba(16, 18, 27, 0.05);
+	--header-bg: rgba(255, 255, 255, 0.8);
+	--glow: color-mix(in srgb, var(--accent) 12%, transparent);
+	--grid-line: rgba(16, 18, 27, 0.035);
+	--up: #059669;
+	--down: #dc2626;
 	--warn-bg: #fffbeb;
 	--warn-border: #f6c453;
 	--warn-text: #92580e;
 }
 :root[data-theme='dark'] {
-	--bg: #0e1014;
-	--surface: #171a21;
-	--border: #262a33;
-	--text: #e8eaf0;
-	--text-muted: #8b919e;
-	--track: #232733;
-	--accent: #818cf8;
-	--accent-2: #a78bfa;
-	--shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.35);
-	--header-bg: rgba(23, 26, 33, 0.8);
+	--bg: #080a0f;
+	--surface: #12151d;
+	--border: #242833;
+	--text: #e9ecf3;
+	--text-muted: #838a99;
+	--track: #1d212b;
+	--accent: #7c83ff;
+	--accent-2: #22d3ee;
+	--shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 10px 34px rgba(0, 0, 0, 0.5);
+	--header-bg: rgba(15, 18, 26, 0.72);
+	--glow: color-mix(in srgb, var(--accent) 18%, transparent);
+	--grid-line: rgba(255, 255, 255, 0.025);
+	--up: #0ecb81;
+	--down: #f6465d;
 	--warn-bg: rgba(245, 158, 11, 0.1);
 	--warn-border: #8a6d3b;
 	--warn-text: #fbbf24;
@@ -49,19 +58,76 @@
 	--color-warn-bg: var(--warn-bg);
 	--color-warn-border: var(--warn-border);
 	--color-warn-text: var(--warn-text);
-	--radius-card: 12px;
-	--font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--color-up: var(--up);
+	--color-down: var(--down);
+	--radius-card: 10px;
+	--font-sans: 'Space Grotesk Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', 'Menlo', monospace;
 }
 
-/* The one repeated surface (cards, table container, modal). */
+/* The one repeated surface (cards, table container, modal). Crypto-dash vibe:
+   glassy fill, a faint top sheen, hairline border, soft depth + hover glow. */
 @layer components {
 	.panel {
-		@apply rounded-[var(--radius-card)] border border-border bg-surface shadow-[var(--shadow)];
+		position: relative;
+		border-radius: var(--radius-card);
+		border: 1px solid color-mix(in srgb, var(--border) 80%, var(--accent) 6%);
+		/* glassy wireframe: mostly-transparent fill so the grid shows through */
+		background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+		backdrop-filter: blur(8px);
+		box-shadow: var(--shadow);
+		transition: border-color 0.2s ease, box-shadow 0.2s ease;
 	}
+	.panel:hover {
+		border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent), 0 8px 40px var(--glow);
+	}
+	/* Outlined progress bar — hollow rail + hollow fill (colored border, faint tint). */
+	.rail {
+		border: 1px solid var(--border);
+		background: transparent;
+	}
+	/* Gradient headline text (big numbers, brand). */
+	.text-gradient {
+		background: linear-gradient(100deg, var(--accent), var(--accent-2));
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+	}
+	/* Tiny uppercase eyebrow used on widget titles / tickers. */
+	.eyebrow {
+		font-size: 0.68rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text-muted);
+	}
+	/* Trading-terminal semantics. */
+	.text-up {
+		color: var(--up);
+	}
+	.text-down {
+		color: var(--down);
+	}
+}
+
+/* Numeric readouts render in mono — the ledger/ticker feel of a trading desk. */
+.tabular-nums,
+.font-mono {
+	font-family: var(--font-mono);
+	letter-spacing: -0.02em;
+	font-feature-settings: 'tnum' 1, 'zero' 1;
 }
 
 body {
 	background-color: var(--bg);
+	/* ambient accent glow + faint graph-paper grid — a trading-terminal backdrop */
+	background-image:
+		radial-gradient(1100px 560px at 50% -12%, var(--glow), transparent 62%),
+		linear-gradient(var(--grid-line) 1px, transparent 1px),
+		linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+	background-size: auto, 38px 38px, 38px 38px;
+	background-attachment: fixed;
 	color: var(--text);
 	font-family: var(--font-sans);
 	-webkit-font-smoothing: antialiased;

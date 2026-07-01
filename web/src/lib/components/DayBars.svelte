@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { Chart, Svg, Bars, Bar, Axis, Grid, Highlight, Tooltip } from 'layerchart';
+	import { scaleBand } from 'd3-scale';
 	import { money, toPEN } from '$lib/format';
 	import type { Transaction } from '$lib/types';
 
@@ -20,12 +23,6 @@
 		})()
 	);
 
-	function barColor(v: number): string {
-		if (v <= median) return 'hsl(150 55% 45%)';
-		const t = max > median ? (v - median) / (max - median) : 1;
-		return `hsl(${Math.round(150 * (1 - t))} 72% 48%)`;
-	}
-
 	// 'MM-DD' → that day's transactions, biggest first (by soles).
 	const byDay = $derived(
 		(() => {
@@ -45,77 +42,104 @@
 		})()
 	);
 
-	// cursor-following tooltip — coords are RELATIVE to the chart container
-	// (a `fixed` tooltip breaks: the panel's transition-transform makes it a
-	// containing block, so viewport coords don't apply). absolute it is.
-	let hovered = $state<string | null>(null);
-	let mx = $state(0);
-	let my = $state(0);
-	let boxW = $state(600);
-	const TW = 256; // tooltip width (w-64)
-	const left = $derived(Math.max(0, Math.min(mx + 16, boxW - TW)));
-	const hoveredValue = $derived(hovered ? (points.find((p) => p.date === hovered)?.value ?? 0) : 0);
-	const hoveredRows = $derived(hovered ? (byDay[hovered] ?? []) : []);
+	// Enrich each bar with its transactions so the tooltip can itemize the day.
+	const data = $derived(points.map((p) => ({ ...p, rows: byDay[p.date] ?? [] })));
 
-	function track(e: MouseEvent) {
-		const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-		boxW = r.width;
-		mx = e.clientX - r.left;
-		my = e.clientY - r.top;
+	// Bar color reacts to the median: at/below = green; above ramps yellow → red
+	// by how far past the median it sits (relative to the peak day).
+	function barColor(v: number): string {
+		if (v <= median || max <= median) return '#0ecb81';
+		const t = Math.min(1, (v - median) / (max - median));
+		return `hsl(${Math.round(48 - 48 * t)} 88% 55%)`; // 48=yellow → 0=red
 	}
+
+	// Fixed, "nice" top of the axis so we can place the median line precisely.
+	const niceMax = $derived(Math.max(100, Math.ceil(max / 100) * 100));
+	// Plot geometry (must match the Chart padding + wrapper height below).
+	const PAD_TOP = 4;
+	const PAD_BOTTOM = 20;
+	const PAD_LEFT = 36;
+	const H = 160; // h-40
+	const medianTop = $derived(PAD_TOP + (1 - median / niceMax) * (H - PAD_TOP - PAD_BOTTOM));
+
+	// layerchart measures the DOM → render client-only so SSR and hydration agree.
+	let mounted = $state(false);
+	onMount(() => (mounted = true));
+
+	// Compact soles: 1.2k, 460, 0 — keeps the y-axis narrow and legible.
+	const compact = (v: number) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : String(Math.round(v)));
+	// Show ~6 date labels max so the axis doesn't crowd.
+	const xTicks = (scale: { domain: () => string[] }) => {
+		const dom = scale.domain();
+		const stride = Math.max(1, Math.ceil(dom.length / 6));
+		return dom.filter((_, i) => i % stride === 0);
+	};
 </script>
 
 {#if points.length}
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="relative" onmousemove={track} onmouseleave={() => (hovered = null)}>
-		<div class="mb-2 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-xs text-muted">
-			<span><span class="font-semibold text-text">{fmt(median)}</span> median/day</span>
-			<span>· max {fmt(max)}</span>
-			<span>· <span class="font-semibold text-text">{fmt(total)}</span> total</span>
-		</div>
-		<div class="relative flex h-40 items-end gap-px">
-			{#each points as p (p.date)}
-				<div
-					class="min-h-px flex-1 rounded-t transition-[height] duration-300 hover:brightness-110"
-					style="height: {p.value > 0 ? Math.max((p.value / max) * 100, 3) : 0}%; background: {barColor(p.value)}"
-					onmouseenter={() => (hovered = p.date)}
-					role="presentation"
-				></div>
-			{/each}
-			{#if median > 0}
-				<div
-					class="pointer-events-none absolute inset-x-0 z-10 border-t border-dashed border-muted/70"
-					style="bottom: {(median / max) * 100}%"
-				>
-					<span class="absolute right-0 -top-3.5 bg-surface px-1 text-[0.65rem] text-muted">median</span>
-				</div>
-			{/if}
-		</div>
-		<div class="mt-1 flex justify-between text-[0.7rem] text-muted">
-			<span>{points[0].date}</span>
-			<span>{points[points.length - 1].date}</span>
-		</div>
-
-		{#if hovered}
-		<div
-			class="pointer-events-none absolute z-50 w-64 rounded-xl border border-border bg-surface p-3 text-left shadow-[0_8px_30px_rgba(0,0,0,0.18)]"
-			style="left: {left}px; top: {my + 16}px"
+	<div class="mb-2 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-xs font-light text-muted">
+		<span><span class="font-medium text-text">{fmt(median)}</span> median/day</span>
+		<span>· max {fmt(max)}</span>
+		<span>· <span class="font-medium text-text">{fmt(total)}</span> total</span>
+	</div>
+	<div class="relative h-40 [&_text]:!fill-muted [&_text]:![font-size:0.62rem] [&_text]:!font-normal [&_text]:![stroke:none] [&_text]:[paint-order:fill] [&_line]:stroke-border/40">
+		{#if mounted}
+		<Chart
+			{data}
+			x="date"
+			xScale={scaleBand().padding(0.3)}
+			y="value"
+			yDomain={[0, niceMax]}
+			padding={{ left: PAD_LEFT, bottom: PAD_BOTTOM, top: PAD_TOP }}
+			tooltip={{ mode: 'band' } as any}
 		>
-			<div class="mb-1.5 flex justify-between gap-3 border-b border-border pb-1.5 text-sm font-semibold">
-				<span>{hovered}</span><span class="tabular-nums">S/ {fmt(hoveredValue)}</span>
+			<Svg>
+				<Grid y />
+				<Bars>
+					{#each data as d (d.date)}
+						<Bar data={d} radius={2} rounded="top" strokeWidth={0} fill={barColor(d.value)} />
+					{/each}
+				</Bars>
+				<Axis placement="left" ticks={4} format={compact} />
+				<Axis placement="bottom" ticks={xTicks} />
+				<Highlight bar={{ class: 'fill-none stroke-current stroke-1 opacity-40' }} />
+			</Svg>
+
+			<Tooltip.Root>
+				{#snippet children({ data: d }: { data: { date: string; value: number; rows: { merchant: string; amount: number | null; currency: string | null }[] } })}
+					<div class="mb-1.5 flex justify-between gap-4 border-b border-border pb-1.5 text-sm font-semibold">
+						<span>{d.date}</span><span class="tabular-nums">S/ {fmt(d.value)}</span>
+					</div>
+					{#each d.rows.slice(0, 8) as r}
+						<div class="flex justify-between gap-3 py-0.5 text-sm">
+							<span class="max-w-[10rem] truncate text-muted">{r.merchant}</span>
+							<span class="tabular-nums">{money(r.amount, r.currency)}</span>
+						</div>
+					{:else}
+						<div class="text-sm text-muted">No itemized transactions.</div>
+					{/each}
+					{#if d.rows.length > 8}
+						<div class="mt-1 text-xs text-muted">+{d.rows.length - 8} more</div>
+					{/if}
+				{/snippet}
+			</Tooltip.Root>
+		</Chart>
+
+		{#if median > 0}
+			<!-- Median-per-day reference line (crypto price-line style) + tag. -->
+			<div class="pointer-events-none absolute right-0" style="top: {medianTop}px; left: {PAD_LEFT}px">
+				<div
+					class="border-t-2 border-dashed"
+					style="border-color: var(--accent-2); box-shadow: 0 0 10px color-mix(in srgb, var(--accent-2) 60%, transparent)"
+				></div>
+				<span
+					class="absolute -top-2.5 right-0 rounded px-1.5 py-0.5 text-[0.58rem] font-semibold text-black"
+					style="background: var(--accent-2)"
+				>
+					med {fmt(median)}
+				</span>
 			</div>
-			{#each hoveredRows.slice(0, 8) as t}
-				<div class="flex justify-between gap-3 py-0.5 text-sm">
-					<span class="truncate text-muted">{t.merchant}</span>
-					<span class="tabular-nums">{money(t.amount, t.currency)}</span>
-				</div>
-			{:else}
-				<div class="text-sm text-muted">No itemized transactions.</div>
-			{/each}
-			{#if hoveredRows.length > 8}
-				<div class="mt-1 text-xs text-muted">+{hoveredRows.length - 8} more</div>
-			{/if}
-		</div>
+		{/if}
 		{/if}
 	</div>
 {:else}
