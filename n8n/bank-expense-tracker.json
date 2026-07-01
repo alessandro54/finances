@@ -1,8 +1,275 @@
 {
+  "connections": {
+    "BBVA Email Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extract Body",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Backfill 12h": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Sweep Diners",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "Sweep BBVA",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Build Claude Payload": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Claude API",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Build Interbank Vision": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Claude Vision API",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Build OpenAI Payload": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "OpenAI API",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Build Turso Body": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Write to Turso",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Check Seen": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Flag Seen",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Claude API": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Parse Response",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Build OpenAI Payload",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Claude Vision API": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Parse Interbank",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Extract Body": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Check Seen",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Flag Seen": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Is New?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extract Body",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Interbank Form": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Build Interbank Vision",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Interbank Telegram": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Build Interbank Vision",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Is New?": {
+      "main": [
+        null,
+        [
+          {
+            "index": 0,
+            "node": "Build Claude Payload",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "OpenAI API": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Parse OpenAI",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Parse Interbank": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Build Turso Body",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Parse OpenAI": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Build Turso Body",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Parse Response": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Build Turso Body",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Sweep BBVA": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extract Body",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Sweep Diners": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extract Body",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Write to Turso": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Telegram Confirm",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
   "name": "Bank Expense Tracker",
   "nodes": [
     {
+      "id": "71e3d802-00b4-4036-851c-56d0d6857024",
+      "name": "Gmail Trigger",
       "parameters": {
+        "filters": {
+          "q": "from:avisos@dinersenlinea.pe"
+        },
+        "options": {},
         "pollTimes": {
           "item": [
             {
@@ -10,41 +277,38 @@
             }
           ]
         },
-        "simple": false,
-        "filters": {
-          "q": "from:avisos@dinersenlinea.pe"
-        },
-        "options": {}
+        "simple": false
       },
-      "id": "71e3d802-00b4-4036-851c-56d0d6857024",
-      "name": "Gmail Trigger",
-      "type": "n8n-nodes-base.gmailTrigger",
-      "typeVersion": 1,
       "position": [
         128,
         352
-      ]
+      ],
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1
     },
     {
+      "id": "21dc0612-ecfb-46bd-9c1c-03a99f52f16a",
+      "name": "Build Claude Payload",
       "parameters": {
         "jsCode": "const SYSTEM_PROMPT = `You are a bank expense parser agent. Your sole job is to extract structured transaction data from bank notification emails and SMS messages from Peruvian banks.\n\n## Input\nYou will receive the raw text of a bank notification. It may come from:\n- BBVA Perú — email with labeled fields (Comercio / Monto / Moneda / Fecha / Hora)\n- Diners Club Perú — email in prose format\n- Interbank Perú — SMS text forwarded via email\n\n## Output\nYou must ALWAYS respond with a single JSON object and nothing else — no preamble, no explanation, no markdown fences.\n\nThe JSON schema is:\n{\n  \"date\": \"YYYY-MM-DD\",\n  \"time\": \"HH:MM\" or null,\n  \"bank\": \"BBVA\" | \"Diners Club\" | \"Interbank\",\n  \"card_last4\": \"XXXX\" or null,\n  \"amount\": 123.45,\n  \"currency\": \"PEN\" | \"USD\" | \"EUR\",\n  \"merchant\": \"Merchant name exactly as it appears\",\n  \"merchant_clean\": \"Human-readable cleaned-up name\",\n  \"transaction_type\": \"purchase\" | \"withdrawal\" | \"online\" | \"recurring\" | \"refund\" | \"unknown\",\n  \"channel\": \"in_store\" | \"online\" | \"atm\" | \"unknown\",\n  \"raw_text\": \"The original notification text verbatim\",\n  \"confidence\": \"high\" | \"medium\" | \"low\",\n  \"category\": \"lowercase category slug\"\n}\n\n## Bank formats\n\n### BBVA Perú\nLabeled fields per line:\n  Comercio: DLC*PedidosYa Haw\n  Monto: 35.57\n  Moneda: PEN\n  Fecha: 09/06/2026\n  Hora: 12:08:46\n- merchant: the value of the \"Comercio\" field, exactly.\n- Card appears at bottom: \"tarjeta terminada en *9788\" — extract the 4 digits as card_last4.\n\n### Diners Club Perú\nProse: \"Le informamos que usted realizó un consumo el DD/MM/YYYY a las HH:MM:SS horas en el comercio MERCHANT_NAME por un importe de S/ AMOUNT.\"\n- merchant: the text after \"en el comercio\" and before \"por un importe\".\n- card_last4: null (not present).\n\n### Interbank Perú (SMS forwarded)\n\"Interbank: Consumo S/XX.XX en MERCHANT con tarjeta XXXX el DD/MM/YYYY\"\nor \"IBK: Compra S/XX.XX MERCHANT *XXXX DD/MM/YY HH:MM\"\n- merchant: the text after \"en\" / after the amount and before \"con tarjeta\" (or before the \"*XXXX\" card token).\n- card_last4: the digits after \"tarjeta\" or after \"*\".\n\n## Extraction rules\n\n1. date: output YYYY-MM-DD. Input is DD/MM/YYYY or DD/MM/YY. For a 2-digit year, expand to 20YY (e.g. 26 → 2026).\n\n2. time: output HH:MM, 24-hour, drop seconds. If no time is present in the notification, output null. Do not fabricate a time.\n\n3. amount: a float (dot decimal). Strip currency symbols (S/, US$, €) and spaces, then resolve separators:\n   - Both \".\" and \",\" present → \".\" is the thousands separator, \",\" is the decimal. \"S/ 1.250,90\" → 1250.90\n   - Only \",\" present → \",\" is the decimal. \"35,57\" → 35.57\n   - Only \".\" present → count the digits after it: exactly 2 digits = decimal (\"35.57\" → 35.57); exactly 3 digits = thousands (\"1.250\" → 1250). Other counts: treat \".\" as decimal.\n   - No separator → integer (\"1250\" → 1250).\n   - Never fabricate an amount. If the separators are genuinely ambiguous, still output your best parse but set confidence to \"low\".\n\n4. currency: S/ → PEN. US$ or USD → USD. € or EUR → EUR. Default PEN if no symbol.\n\n5. card_last4: BBVA — 4 digits from \"tarjeta terminada en *XXXX\". Diners — null. Interbank — digits after \"tarjeta\" or after \"*\". If absent, null.\n\n6. merchant: extract verbatim per the bank-specific rule above (BBVA Comercio field / Diners after \"en el comercio\" / Interbank after \"en\"). Do not clean it here.\n\n7. merchant_clean: a human-readable version of merchant:\n   - DLC* prefix → remove, Title Case the rest\n   - DLC*PedidosYa* → PedidosYa\n   - TOTTUS* → Tottus\n   - RAPPI* → Rappi\n   - UBER* EATS → Uber Eats\n   - UBER* TRIP / UBER*TRIP → Uber\n   - AMZN* / AMAZON* → Amazon\n   - NETFLIX.COM → Netflix\n   - SPOTIFY → Spotify\n   - WU * → Western Union\n   - All-caps → Title Case\n   - Otherwise: remove \"*\" and \"#\", Title Case.\n\n8. transaction_type = WHAT happened (independent of channel):\n   - consumo / compra → purchase\n   - retiro / disposicion de efectivo → withdrawal\n   - devolucion / reverso / anulacion → refund\n   - recurring subscriptions (Netflix, Spotify, Disney, HBO, Amazon Prime, Apple) → recurring\n   - if none fit → purchase\n   Do NOT pick \"online\" here unless the text describes the action itself as an online operation with no better fit; \"online\" usually belongs in channel, not transaction_type.\n\n9. channel = WHERE it happened:\n   - DLC* / .COM / PedidosYa / Rappi / Uber / app purchases → online\n   - cajero / ATM / retiro → atm\n   - Tottus / Wong / Plaza Vea / Ripley / Saga / physical stores → in_store\n   - else → unknown\n   A .com or app purchase is transaction_type \"purchase\" with channel \"online\" — not transaction_type \"online\".\n\n10. amount sign: always output amount as a positive number. The transaction_type (e.g. \"refund\") conveys direction; do not negate the value.\n\n11. confidence:\n   - high: every field read directly from the text, unambiguous amount and date.\n   - medium: 1–2 fields inferred (e.g. merchant_clean normalized, channel guessed) but amount/date/currency certain.\n   - low: ambiguous amount separators, missing or guessed amount/date, or unrecognized format.\n\n12. category: a lowercase short slug for the spend type. Prefer a common existing one: groceries, dining, transport, subscriptions, shopping, health, utilities, entertainment, cash, transfer, fees. If none fits, use \"other\". Do NOT invent niche categories — map to the closest common one or \"other\".\n\n## Edge cases\n- Not a transaction (OTP, login alert, marketing, statement, balance reminder, promo): { \"error\": \"not_a_transaction\", \"raw_text\": \"...\" }\n- Amount missing or unreadable: { \"error\": \"parsing_failed\", \"reason\": \"brief reason\", \"raw_text\": \"...\" }\n- Never fabricate amount, date, or merchant.`;\n\nreturn $input.all().map(({ json: item }) => {\n  const emailBody = item.emailBody;\n  return { json: { dedupe_id: item.dedupe_id, payload: { model: 'claude-sonnet-4-6', max_tokens: 1024, system: SYSTEM_PROMPT, messages: [{ role: 'user', content: emailBody }] } } };\n});\n"
       },
-      "id": "21dc0612-ecfb-46bd-9c1c-03a99f52f16a",
-      "name": "Build Claude Payload",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
         1248,
         256
-      ]
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
+      "id": "ff97bd8b-7002-41e1-8a44-a6f867fcf500",
+      "maxTries": 5,
+      "name": "Claude API",
+      "onError": "continueErrorOutput",
       "parameters": {
-        "method": "POST",
-        "url": "https://api.anthropic.com/v1/messages",
         "authentication": "genericCredentialType",
+        "body": "={{ JSON.stringify($json.payload) }}",
+        "contentType": "raw",
         "genericAuthType": "httpHeaderAuth",
-        "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
@@ -57,52 +321,43 @@
             }
           ]
         },
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify($json.payload) }}",
+        "method": "POST",
         "options": {
           "response": {
             "response": {}
           }
-        }
+        },
+        "rawContentType": "application/json",
+        "sendBody": true,
+        "sendHeaders": true,
+        "url": "https://api.anthropic.com/v1/messages"
       },
-      "id": "ff97bd8b-7002-41e1-8a44-a6f867fcf500",
-      "name": "Claude API",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
       "position": [
         1472,
         256
       ],
       "retryOnFail": true,
-      "maxTries": 5,
-      "waitBetweenTries": 5000,
-      "onError": "continueErrorOutput"
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "waitBetweenTries": 5000
     },
     {
+      "id": "ff025fb3-fba2-4a56-851b-991f212a07cc",
+      "name": "Parse Response",
       "parameters": {
         "jsCode": "const sources = $('Build Claude Payload').all();\nreturn $input.all().map(({ json: response }, i) => {\n  const dedupe_id = sources[i] && sources[i].json ? sources[i].json.dedupe_id : null;\n  const rawText = response.content?.[0]?.text ?? '';\n  const cleaned = rawText.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```\\s*$/i, '').trim();\n  let parsed;\n  try {\n    parsed = JSON.parse(cleaned);\n  } catch (e) {\n    parsed = { error: 'parsing_failed', reason: 'Claude response was not valid JSON', raw_text: rawText };\n  }\n  return { json: { ...parsed, dedupe_id } };\n});"
       },
-      "id": "ff025fb3-fba2-4a56-851b-991f212a07cc",
-      "name": "Parse Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
         2144,
         160
-      ]
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
+      "id": "be57305b-72bd-4f33-95e3-b3e7096ecfd3",
+      "name": "BBVA Email Trigger",
       "parameters": {
-        "pollTimes": {
-          "item": [
-            {
-              "mode": "everyMinute"
-            }
-          ]
-        },
-        "output": "fields",
         "fields": [
           "body",
           "internetMessageId"
@@ -112,188 +367,196 @@
           "readStatus": "unread",
           "sender": "procesos@bbva.com.pe"
         },
-        "options": {}
+        "options": {},
+        "output": "fields",
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        }
       },
-      "id": "be57305b-72bd-4f33-95e3-b3e7096ecfd3",
-      "name": "BBVA Email Trigger",
-      "type": "n8n-nodes-base.microsoftOutlookTrigger",
-      "typeVersion": 1,
       "position": [
         128,
         544
-      ]
+      ],
+      "type": "n8n-nodes-base.microsoftOutlookTrigger",
+      "typeVersion": 1
     },
     {
+      "id": "e0914201-9450-4bab-8533-a7aff1423200",
+      "name": "Extract Body",
       "parameters": {
         "jsCode": "const out = [];\nfor (const { json: item } of $input.all()) {\n  const isOutlook = item.internetMessageId !== undefined || (item.body && item.body.content !== undefined) || item.bodyPreview !== undefined;\n  let emailBody = '';\n  let dedupe_id = '';\n  if (isOutlook) {\n    const bodyContent = item.body && item.body.content ? item.body.content : (item.bodyPreview || '');\n    emailBody = bodyContent;\n    if (bodyContent.indexOf('<') !== -1) {\n      emailBody = bodyContent\n        .replace(/<[^>]+>/g, ' ')\n        .replace(/&nbsp;/g, ' ')\n        .replace(/&amp;/g, '&')\n        .replace(/&lt;/g, '<')\n        .replace(/&gt;/g, '>')\n        .replace(/\\s+/g, ' ')\n        .trim();\n    }\n    dedupe_id = 'bbva:' + (item.internetMessageId || item.id || emailBody.slice(0, 120));\n  } else {\n    emailBody = item.text || '';\n    if (!emailBody && item.html) {\n      emailBody = item.html\n        .replace(/<[^>]+>/g, ' ')\n        .replace(/&nbsp;/g, ' ')\n        .replace(/\\s+/g, ' ')\n        .trim();\n    }\n    if (!emailBody && item.snippet) emailBody = item.snippet;\n    dedupe_id = 'diners:' + (item.id || item.threadId || emailBody.slice(0, 120));\n  }\n  if (!emailBody || !emailBody.trim()) continue;\n  out.push({ json: { ...item, emailBody, dedupe_id } });\n}\nreturn out;\n"
       },
-      "id": "e0914201-9450-4bab-8533-a7aff1423200",
-      "name": "Extract Body",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
         352,
         256
-      ]
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
-      "parameters": {
-        "method": "POST",
-        "url": "https://n8n-finances-alessandro54.aws-us-east-1.turso.io/v2/pipeline",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify($json.tursoBody) }}",
-        "options": {}
-      },
       "id": "3a6b0ad7-6c5e-46c9-8296-911a4a24ea90",
       "name": "Write to Turso",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "body": "={{ JSON.stringify($json.tursoBody) }}",
+        "contentType": "raw",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "options": {},
+        "rawContentType": "application/json",
+        "sendBody": true,
+        "url": "https://n8n-finances-alessandro54.aws-us-east-1.turso.io/v2/pipeline"
+      },
       "position": [
         2592,
         256
-      ]
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4
     },
     {
-      "parameters": {
-        "method": "POST",
-        "url": "https://n8n-finances-alessandro54.aws-us-east-1.turso.io/v2/pipeline",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ requests: [ { type: \"execute\", stmt: { sql: \"SELECT dedupe_id FROM transactions WHERE dedupe_id = ? UNION SELECT dedupe_id FROM errors WHERE dedupe_id = ? LIMIT 1\", args: [ ($json.dedupe_id==null?{type:\"null\"}:{type:\"text\",value:String($json.dedupe_id)}), ($json.dedupe_id==null?{type:\"null\"}:{type:\"text\",value:String($json.dedupe_id)}) ] } }, { type: \"close\" } ] }) }}",
-        "options": {}
-      },
       "id": "effad1fc-b3d6-499d-814c-575506c1d021",
       "name": "Check Seen",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "body": "={{ JSON.stringify({ requests: [ { type: \"execute\", stmt: { sql: \"SELECT dedupe_id FROM transactions WHERE dedupe_id = ? UNION SELECT dedupe_id FROM errors WHERE dedupe_id = ? LIMIT 1\", args: [ ($json.dedupe_id==null?{type:\"null\"}:{type:\"text\",value:String($json.dedupe_id)}), ($json.dedupe_id==null?{type:\"null\"}:{type:\"text\",value:String($json.dedupe_id)}) ] } }, { type: \"close\" } ] }) }}",
+        "contentType": "raw",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "options": {},
+        "rawContentType": "application/json",
+        "sendBody": true,
+        "url": "https://n8n-finances-alessandro54.aws-us-east-1.turso.io/v2/pipeline"
+      },
       "position": [
         576,
         256
-      ]
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4
     },
     {
+      "id": "d863fc11-7923-4756-ba45-f71a5f0a6ce4",
+      "name": "Flag Seen",
       "parameters": {
         "jsCode": "const emails = $('Extract Body').all();\nconst checks = $input.all();\nreturn checks.map((c, i) => {\n  const rows = c.json?.results?.[0]?.response?.result?.rows ?? [];\n  const base = emails[i] ? emails[i].json : {};\n  return { json: { ...base, _seen: rows.length > 0 } };\n});"
       },
-      "id": "d863fc11-7923-4756-ba45-f71a5f0a6ce4",
-      "name": "Flag Seen",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
         800,
         256
-      ]
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
-      "parameters": {
-        "chatId": "1417620518",
-        "text": "={{ (() => { const j = $('Build Turso Body').item.json; if (j.error) { return '⚠️ Parse failed: ' + j.error + (j.reason ? ' — ' + j.reason : ''); } let affected; try { const res = ($json && $json.results) ? $json.results.filter(r => r && r.response && r.response.result) : []; affected = res.length ? res[res.length - 1].response.result.affected_row_count : undefined; } catch (e) { affected = undefined; } const who = (j.merchant_clean || j.merchant || ''); if (affected === 0) { return '↩️ Already recorded · ' + (j.currency || '') + ' ' + j.amount + ' · ' + who; } let s = '✅ ' + (j.currency || '') + ' ' + j.amount + ' · ' + who + ' · ' + (j.category || 'other') + ' · ' + (j.bank || ''); if (j.date) s += '\\n' + j.date + (j.time ? ' ' + j.time : ''); if (j.confidence && j.confidence !== 'high') s += '\\n⚠️ confidence ' + j.confidence + ' — review'; return s; })() }}",
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
       "id": "5711263d-31bc-46ff-93f9-d86715c0d815",
       "name": "Telegram Confirm",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
+      "parameters": {
+        "additionalFields": {
+          "appendAttribution": false
+        },
+        "chatId": "1417620518",
+        "text": "={{ (() => { const j = $('Build Turso Body').item.json; if (j.error) { return '⚠️ Parse failed: ' + j.error + (j.reason ? ' — ' + j.reason : ''); } let affected; try { const res = ($json && $json.results) ? $json.results.filter(r => r && r.response && r.response.result) : []; affected = res.length ? res[res.length - 1].response.result.affected_row_count : undefined; } catch (e) { affected = undefined; } const who = (j.merchant_clean || j.merchant || ''); if (affected === 0) { return '↩️ Already recorded · ' + (j.currency || '') + ' ' + j.amount + ' · ' + who; } let s = '✅ ' + (j.currency || '') + ' ' + j.amount + ' · ' + who + ' · ' + (j.category || 'other') + ' · ' + (j.bank || ''); if (j.date) s += '\\n' + j.date + (j.time ? ' ' + j.time : ''); if (j.confidence && j.confidence !== 'high') s += '\\n⚠️ confidence ' + j.confidence + ' — review'; return s; })() }}"
+      },
       "position": [
         2816,
         256
       ],
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
       "webhookId": "67a49aea-49df-4e10-b6d9-c14692631626"
     },
     {
+      "id": "304eadc0-144c-404a-a337-b983ec0d068f",
+      "name": "Is New?",
       "parameters": {
         "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "seen1",
+              "leftValue": "={{ $json._seen }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
           "options": {
             "caseSensitive": true,
             "leftValue": "",
             "typeValidation": "strict",
             "version": 1
-          },
-          "conditions": [
-            {
-              "id": "seen1",
-              "leftValue": "={{ $json._seen }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
+          }
         },
         "options": {}
       },
-      "id": "304eadc0-144c-404a-a337-b983ec0d068f",
-      "name": "Is New?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
       "position": [
         1024,
         256
-      ]
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
     },
     {
+      "id": "bd5adb28-2eec-435d-b3e3-4944b4651eee",
+      "name": "Build OpenAI Payload",
       "parameters": {
         "jsCode": "return $input.all().map(({ json: item }) => {\n  const p = item.payload || {};\n  const system = p.system || '';\n  const userMsg = (p.messages && p.messages[0] && p.messages[0].content) || item.emailBody || '';\n  return { json: { dedupe_id: item.dedupe_id, openai: { model: 'gpt-4o-mini', max_tokens: 1024, response_format: { type: 'json_object' }, messages: [ { role: 'system', content: system }, { role: 'user', content: userMsg } ] } } };\n});\n"
       },
-      "id": "bd5adb28-2eec-435d-b3e3-4944b4651eee",
-      "name": "Build OpenAI Payload",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
         1696,
         352
-      ]
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.openai.com/v1/chat/completions",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify($json.openai) }}",
-        "options": {}
-      },
       "id": "da7df257-ba6d-4736-9aca-db09a6040b16",
+      "maxTries": 3,
       "name": "OpenAI API",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "body": "={{ JSON.stringify($json.openai) }}",
+        "contentType": "raw",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "options": {},
+        "rawContentType": "application/json",
+        "sendBody": true,
+        "url": "https://api.openai.com/v1/chat/completions"
+      },
       "position": [
         1920,
         352
       ],
       "retryOnFail": true,
-      "maxTries": 3,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
       "waitBetweenTries": 5000
     },
     {
+      "id": "29ca4e2e-3a34-4abf-80e8-bcae39825f7d",
+      "name": "Parse OpenAI",
       "parameters": {
         "jsCode": "const sources = $('Build OpenAI Payload').all();\nreturn $input.all().map(({ json: response }, i) => {\n  const dedupe_id = sources[i] && sources[i].json ? sources[i].json.dedupe_id : null;\n  const rawText = response.choices?.[0]?.message?.content ?? '';\n  const cleaned = rawText.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```\\s*$/i, '').trim();\n  let parsed;\n  try {\n    parsed = JSON.parse(cleaned);\n  } catch (e) {\n    parsed = { error: 'parsing_failed', reason: 'OpenAI response was not valid JSON', raw_text: rawText };\n  }\n  return { json: { ...parsed, dedupe_id } };\n});"
       },
-      "id": "29ca4e2e-3a34-4abf-80e8-bcae39825f7d",
-      "name": "Parse OpenAI",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
         2144,
         352
-      ]
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
+      "id": "53abb04f-323b-46c8-9df4-ad47b8d50416",
+      "name": "Backfill 12h",
       "parameters": {
         "rule": {
           "interval": [
@@ -304,42 +567,39 @@
           ]
         }
       },
-      "id": "53abb04f-323b-46c8-9df4-ad47b8d50416",
-      "name": "Backfill 12h",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.3,
       "position": [
         -96,
         64
-      ]
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3
     },
     {
+      "id": "c91d6276-5f11-49ec-934a-bf39a617db42",
+      "name": "Sweep Diners",
       "parameters": {
-        "operation": "getAll",
-        "returnAll": true,
-        "simple": false,
         "filters": {
           "q": "from:avisos@dinersenlinea.pe",
           "readStatus": "both",
           "receivedAfter": "={{ $now.minus(7, 'days').toISO() }}"
         },
-        "options": {}
+        "operation": "getAll",
+        "options": {},
+        "returnAll": true,
+        "simple": false
       },
-      "id": "c91d6276-5f11-49ec-934a-bf39a617db42",
-      "name": "Sweep Diners",
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
       "position": [
         128,
         -32
       ],
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
       "webhookId": "7c9fe69e-27e9-4bd3-80ee-0c1164c13d24"
     },
     {
+      "id": "3d50ec37-0412-45e3-8f0c-e181fd9235ea",
+      "name": "Sweep BBVA",
       "parameters": {
-        "operation": "getAll",
-        "returnAll": true,
-        "output": "fields",
         "fields": [
           "body",
           "internetMessageId"
@@ -353,45 +613,48 @@
             }
           }
         },
-        "options": {}
+        "operation": "getAll",
+        "options": {},
+        "output": "fields",
+        "returnAll": true
       },
-      "id": "3d50ec37-0412-45e3-8f0c-e181fd9235ea",
-      "name": "Sweep BBVA",
-      "type": "n8n-nodes-base.microsoftOutlook",
-      "typeVersion": 2,
       "position": [
         128,
         160
       ],
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
       "webhookId": "db67ead0-cd34-44a6-8140-5a226f89944d"
     },
     {
+      "id": "dc599833-65a2-4643-b80f-06e6b775acdf",
+      "name": "Build Turso Body",
       "parameters": {
         "jsCode": "const t = (v) => (v == null ? { type: 'null' } : { type: 'text', value: String(v) });\nconst f = (v) => (v == null || isNaN(Number(v)) ? { type: 'null' } : { type: 'float', value: Number(v) });\nreturn $input.all().map(({ json: j }) => {\n  const dedupe_id = j.dedupe_id;\n  let tursoBody;\n  if (j.error) {\n    tursoBody = { requests: [\n      { type: 'execute', stmt: { sql: 'INSERT OR IGNORE INTO errors (dedupe_id,error,reason,raw_text) VALUES (?,?,?,?)', args: [ t(dedupe_id), t(j.error), t(j.reason), t(j.raw_text) ] } },\n      { type: 'close' },\n    ] };\n  } else {\n    const pfx = String(dedupe_id).split(':')[0];\n    const source = pfx === 'bbva' ? 'mail-bbva' : (pfx === 'interbank' ? 'manual-interbank' : 'mail-diners');\n    const category = j.category || 'other';\n    tursoBody = { requests: [\n      { type: 'execute', stmt: { sql: 'INSERT OR IGNORE INTO categories (name) VALUES (?)', args: [ t(category) ] } },\n      { type: 'execute', stmt: { sql: 'INSERT OR IGNORE INTO transactions (dedupe_id,date,time,bank,card_last4,amount,currency,merchant,merchant_clean,transaction_type,channel,confidence,raw_text,source,category) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', args: [ t(dedupe_id), t(j.date), t(j.time), t(j.bank), t(j.card_last4), f(j.amount), t(j.currency), t(j.merchant), t(j.merchant_clean), t(j.transaction_type), t(j.channel), t(j.confidence), t(j.raw_text), t(source), t(category) ] } },\n      { type: 'close' },\n    ] };\n  }\n  return { json: { ...j, tursoBody } };\n});\n"
       },
-      "id": "dc599833-65a2-4643-b80f-06e6b775acdf",
-      "name": "Build Turso Body",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
         2368,
         256
-      ]
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
+      "id": "c168d766-4415-49db-8502-a81d4a909329",
+      "name": "Interbank Form",
       "parameters": {
-        "formTitle": "Interbank Manual Entry",
         "formDescription": "Upload a screenshot of your Interbank app transaction list. Claude reads every row and saves them (duplicates are ignored automatically).",
         "formFields": {
           "values": [
             {
+              "acceptFileTypes": "image/png,image/jpeg,image/jpg,image/webp",
               "fieldLabel": "Screenshot",
               "fieldType": "file",
-              "acceptFileTypes": "image/png,image/jpeg,image/jpg,image/webp",
               "requiredField": true
             }
           ]
         },
+        "formTitle": "Interbank Manual Entry",
         "options": {
           "appendAttribution": false,
           "path": "interbank-manual",
@@ -402,36 +665,36 @@
           }
         }
       },
-      "id": "c168d766-4415-49db-8502-a81d4a909329",
-      "name": "Interbank Form",
-      "type": "n8n-nodes-base.formTrigger",
-      "typeVersion": 2.6,
       "position": [
         128,
         784
       ],
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
       "webhookId": "002f1b36-b706-4f88-a76d-45a374ba5dc9"
     },
     {
+      "id": "2cb8a716-2202-4be8-a8cd-b8a90005b2f6",
+      "name": "Build Interbank Vision",
       "parameters": {
         "jsCode": "const SYSTEM_PROMPT = `You extract transactions from a screenshot of the Interbank (Peru) mobile banking app transaction list.\n\nReturn ONLY a JSON array (no prose, no markdown fences). Each element is one transaction row:\n{\n  \"date\": \"YYYY-MM-DD\",\n  \"time\": \"HH:MM\" or null,\n  \"bank\": \"Interbank\",\n  \"card_last4\": null,\n  \"amount\": 123.45,\n  \"currency\": \"PEN\" | \"USD\" | \"EUR\",\n  \"merchant\": \"row title exactly as shown\",\n  \"merchant_clean\": \"human-readable name\",\n  \"transaction_type\": \"purchase\" | \"withdrawal\" | \"online\" | \"recurring\" | \"refund\" | \"unknown\",\n  \"channel\": \"in_store\" | \"online\" | \"atm\" | \"unknown\",\n  \"raw_text\": \"the visible row text\",\n  \"confidence\": \"high\" | \"medium\" | \"low\",\n  \"category\": \"lowercase slug\"\n}\n\nEach row has a merchant title, a date line, and an amount on the right.\n\nDATE LINE: Spanish, e.g. \"Jue 25 Jun 6:19 pm\" (weekday DD MonthAbbrev h:mm am/pm). Months: Ene=01 Feb=02 Mar=03 Abr=04 May=05 Jun=06 Jul=07 Ago=08 Sep/Set=09 Oct=10 Nov=11 Dic=12. The year is NOT shown — infer it: use the year of today (given in the user message); if that places the date in the future, use the previous year. Output YYYY-MM-DD.\n\nTIME: convert am/pm to 24h HH:MM. \"6:19 pm\"->\"18:19\", \"8:49 am\"->\"08:49\", \"12:10 am\"->\"00:10\". If no time, null.\n\nAMOUNT: the number on the right. \"S/\"->PEN, \"US$\"->USD, \"€\"->EUR. A minus sign means debit — ALWAYS output a POSITIVE number, never negate.\n\n\"En proceso\" under an amount means pending — still include the row; transaction_type default \"purchase\".\n\nmerchant_clean: Title Case the merchant; map known brands (STEAMGAMES->Steam, HETZNER->Hetzner, NETFLIX->Netflix, SPOTIFY->Spotify, UBER->Uber, RAPPI->Rappi, PEDIDOSYA->PedidosYa, TOTTUS->Tottus, PVEA/PLAZA VEA->Plaza Vea, VIVANDA->Vivanda); drop leading store codes/numbers when obvious.\n\nchannel: physical stores/gas stations->in_store; .com/app/games/online services->online; cajero/ATM->atm; else unknown.\ncategory: one of groceries, dining, transport, subscriptions, shopping, health, utilities, entertainment, cash, transfer, fees; else \"other\". Fuel (GNV, grifo, estacion, quilca gnv)->transport. Steam/games->entertainment. Supermarkets (Plaza Vea, Vivanda, Tottus, Wong)->groceries.\n\nconfidence: high if fully legible; medium if you inferred the year or cleaned aggressively; low if amount/merchant unclear.\n\nIf the image shows no transaction rows, return [].`;\n\nconst TODAY = new Date().toISOString().slice(0, 10);\nconst items = $input.all();\nconst out = [];\nfor (let i = 0; i < items.length; i++) {\n  const bin = items[i].binary || {};\n  for (const key of Object.keys(bin)) {\n    const meta = bin[key];\n    if (!meta) continue;\n    const buf = await this.helpers.getBinaryDataBuffer(i, key);\n    const b64 = buf.toString('base64');\n    if (!b64) continue;\n    out.push({ json: { payload: {\n      model: 'claude-sonnet-4-6',\n      max_tokens: 2048,\n      system: SYSTEM_PROMPT,\n      messages: [{ role: 'user', content: [\n        { type: 'image', source: { type: 'base64', media_type: meta.mimeType || 'image/jpeg', data: b64 } },\n        { type: 'text', text: 'Today is ' + TODAY + '. Extract every transaction row visible in this Interbank app screenshot as a JSON array.' }\n      ] }]\n    } } });\n  }\n}\nreturn out;\n"
       },
-      "id": "2cb8a716-2202-4be8-a8cd-b8a90005b2f6",
-      "name": "Build Interbank Vision",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
         368,
         784
-      ]
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
+      "id": "e2bfd241-c249-491b-a5f9-df8e3c97f63c",
+      "maxTries": 3,
+      "name": "Claude Vision API",
       "parameters": {
-        "method": "POST",
-        "url": "https://api.anthropic.com/v1/messages",
         "authentication": "genericCredentialType",
+        "body": "={{ JSON.stringify($json.payload) }}",
+        "contentType": "raw",
         "genericAuthType": "httpHeaderAuth",
-        "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
@@ -444,326 +707,63 @@
             }
           ]
         },
-        "sendBody": true,
-        "contentType": "raw",
+        "method": "POST",
+        "options": {},
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify($json.payload) }}",
-        "options": {}
+        "sendBody": true,
+        "sendHeaders": true,
+        "url": "https://api.anthropic.com/v1/messages"
       },
-      "id": "e2bfd241-c249-491b-a5f9-df8e3c97f63c",
-      "name": "Claude Vision API",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
       "position": [
         592,
         784
       ],
       "retryOnFail": true,
-      "maxTries": 3,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
       "waitBetweenTries": 5000
     },
     {
+      "id": "6aef365b-511d-48de-983d-228bb89335de",
+      "name": "Parse Interbank",
       "parameters": {
         "jsCode": "function hash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return h.toString(16);}\n// Robust dedup key for manual Interbank captures: normalize fields so neither\n// merchant-text variance (\"Vivanda\" vs \"Vivanda Javier Prado\") nor format quirks\n// (75.1 vs 75.10, \"11:03:00\" vs \"11:03\") create duplicate rows.\nfunction dedupeKey(tx){\n  const amt = (tx.amount==null || isNaN(Number(tx.amount))) ? '' : Number(tx.amount).toFixed(2);\n  const cur = (tx.currency==null ? '' : String(tx.currency)).trim().toUpperCase();\n  const date = (tx.date==null ? '' : String(tx.date)).trim();\n  const time = (tx.time==null ? '' : String(tx.time)).trim().slice(0,5);\n  return [date, time, amt, cur].join('|');\n}\nconst out = [];\nfor (const { json: response } of $input.all()) {\n  const rawText = response.content && response.content[0] && response.content[0].text ? response.content[0].text : '';\n  const cleaned = rawText.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```\\s*$/i, '').trim();\n  let arr;\n  try { arr = JSON.parse(cleaned); } catch (e) { arr = []; }\n  if (!Array.isArray(arr)) arr = (arr && typeof arr === 'object') ? [arr] : [];\n  for (const tx of arr) {\n    if (!tx || tx.error) continue;\n    out.push({ json: { ...tx, bank: tx.bank || 'Interbank', dedupe_id: 'interbank:' + hash(dedupeKey(tx)) } });\n  }\n}\nreturn out;\n"
       },
-      "id": "6aef365b-511d-48de-983d-228bb89335de",
-      "name": "Parse Interbank",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
         800,
         784
-      ]
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
-      "parameters": {
-        "updates": [
-          "message"
-        ],
-        "additionalFields": {
-          "download": true,
-          "imageSize": "large",
-          "chatIds": "1417620518"
-        }
-      },
       "id": "52617114-7e20-49fe-8189-5d824e0d5337",
       "name": "Interbank Telegram",
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.3,
+      "parameters": {
+        "additionalFields": {
+          "chatIds": "1417620518",
+          "download": true,
+          "imageSize": "large"
+        },
+        "updates": [
+          "message"
+        ]
+      },
       "position": [
         128,
         1008
       ],
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
       "webhookId": "1b45ac87-24a9-4608-af27-7fcd08d573bf"
     }
   ],
-  "connections": {
-    "Build Claude Payload": {
-      "main": [
-        [
-          {
-            "node": "Claude API",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Claude API": {
-      "main": [
-        [
-          {
-            "node": "Parse Response",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Build OpenAI Payload",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "BBVA Email Trigger": {
-      "main": [
-        [
-          {
-            "node": "Extract Body",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check Seen": {
-      "main": [
-        [
-          {
-            "node": "Flag Seen",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gmail Trigger": {
-      "main": [
-        [
-          {
-            "node": "Extract Body",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract Body": {
-      "main": [
-        [
-          {
-            "node": "Check Seen",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Write to Turso": {
-      "main": [
-        [
-          {
-            "node": "Telegram Confirm",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Flag Seen": {
-      "main": [
-        [
-          {
-            "node": "Is New?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Is New?": {
-      "main": [
-        null,
-        [
-          {
-            "node": "Build Claude Payload",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Build OpenAI Payload": {
-      "main": [
-        [
-          {
-            "node": "OpenAI API",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI API": {
-      "main": [
-        [
-          {
-            "node": "Parse OpenAI",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Backfill 12h": {
-      "main": [
-        [
-          {
-            "node": "Sweep Diners",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Sweep BBVA",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Sweep Diners": {
-      "main": [
-        [
-          {
-            "node": "Extract Body",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Sweep BBVA": {
-      "main": [
-        [
-          {
-            "node": "Extract Body",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse Response": {
-      "main": [
-        [
-          {
-            "node": "Build Turso Body",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse OpenAI": {
-      "main": [
-        [
-          {
-            "node": "Build Turso Body",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Build Turso Body": {
-      "main": [
-        [
-          {
-            "node": "Write to Turso",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Interbank Form": {
-      "main": [
-        [
-          {
-            "node": "Build Interbank Vision",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Build Interbank Vision": {
-      "main": [
-        [
-          {
-            "node": "Claude Vision API",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Claude Vision API": {
-      "main": [
-        [
-          {
-            "node": "Parse Interbank",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse Interbank": {
-      "main": [
-        [
-          {
-            "node": "Build Turso Body",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Interbank Telegram": {
-      "main": [
-        [
-          {
-            "node": "Build Interbank Vision",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  },
+  "pinData": null,
   "settings": {
-    "executionOrder": "v1",
+    "availableInMCP": true,
     "binaryMode": "separate",
-    "availableInMCP": true
+    "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": {
-    "aiBuilderAssisted": true,
-    "builderVariant": "mcp"
-  },
-  "pinData": null,
   "tags": []
 }
