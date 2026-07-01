@@ -1,17 +1,15 @@
 package handler
 
 import (
-	"encoding/json"
+	"errors"
 	"net/http"
-	"strings"
 
-
-	"finances-api/internal/model"
+	"finances-api/internal/service"
 )
 
 func (h *Handler) listCards(w http.ResponseWriter, r *http.Request) {
-	cards := []model.Card{}
-	if err := h.DB.NewSelect().Model(&cards).Order("bank").Scan(r.Context()); err != nil {
+	cards, err := h.Svc.ListCards(r.Context())
+	if err != nil {
 		fail(w, err)
 		return
 	}
@@ -30,44 +28,14 @@ type cardBody struct {
 
 func (h *Handler) upsertCard(w http.ResponseWriter, r *http.Request) {
 	var b cardBody
-	if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
-		badRequest(w, "invalid body")
+	if !bind(w, r, &b) {
 		return
 	}
-	bank := strings.TrimSpace(b.Bank)
-	if bank == "" {
+	err := h.Svc.UpsertCard(r.Context(), service.CardInput(b))
+	if errors.Is(err, service.ErrEmptyName) {
 		badRequest(w, "bank is empty")
 		return
 	}
-	day := int64(1)
-	if b.CycleStartDay != nil {
-		day = *b.CycleStartDay
-	}
-	day = int64(clampInt(int(day), 1, 28))
-
-	cycleType := "monthly"
-	if b.CycleType != nil && *b.CycleType == "days" {
-		cycleType = "days"
-	}
-
-	card := &model.Card{
-		Bank:            bank,
-		Name:            b.Name,
-		CardLast4:       b.CardLast4,
-		CycleStartDay:   day,
-		CycleType:       cycleType,
-		CycleLengthDays: b.CycleLengthDays,
-		CycleAnchor:     b.CycleAnchor,
-	}
-	_, err := h.DB.NewInsert().Model(card).
-		On("CONFLICT (bank) DO UPDATE").
-		Set("name = EXCLUDED.name").
-		Set("card_last4 = EXCLUDED.card_last4").
-		Set("cycle_start_day = EXCLUDED.cycle_start_day").
-		Set("cycle_type = EXCLUDED.cycle_type").
-		Set("cycle_length_days = EXCLUDED.cycle_length_days").
-		Set("cycle_anchor = EXCLUDED.cycle_anchor").
-		Exec(r.Context())
 	if err != nil {
 		fail(w, err)
 		return
@@ -76,19 +44,11 @@ func (h *Handler) upsertCard(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// deleteCard removes a card and any budgets scoped to it.
 func (h *Handler) deleteCard(w http.ResponseWriter, r *http.Request) {
-	bank := pathParam(r, "bank")
-	ctx := r.Context()
-	if _, err := h.DB.NewDelete().Model((*model.Budget)(nil)).Where("card = ?", bank).Exec(ctx); err != nil {
-		fail(w, err)
-		return
-	}
-	res, err := h.DB.NewDelete().Model((*model.Card)(nil)).Where("bank = ?", bank).Exec(ctx)
+	n, err := h.Svc.DeleteCard(r.Context(), pathParam(r, "bank"))
 	if err != nil {
 		fail(w, err)
 		return
 	}
-	n, _ := res.RowsAffected()
 	writeJSON(w, http.StatusOK, map[string]any{"deleted": n})
 }

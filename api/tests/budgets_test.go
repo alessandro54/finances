@@ -1,5 +1,5 @@
 // Black-box tests: open an in-memory SQLite, apply the real Bun migrations, and
-// exercise the cycle-window + budget-status SQL through the handler package.
+// exercise the cycle-window + budget-status SQL through the service package.
 package tests
 
 import (
@@ -12,7 +12,7 @@ import (
 	_ "modernc.org/sqlite"
 
 	"finances-api/internal/db"
-	"finances-api/internal/handler"
+	"finances-api/internal/service"
 )
 
 func testDB(t *testing.T) *bun.DB {
@@ -33,6 +33,7 @@ func TestCycleWindow(t *testing.T) {
 	bdb := testDB(t)
 	defer bdb.Close()
 	ctx := context.Background()
+	svc := service.New(bdb)
 
 	cases := []struct {
 		ref        string
@@ -46,7 +47,7 @@ func TestCycleWindow(t *testing.T) {
 		{"2026-01-03", 5, "2025-12-05", "2026-01-05", "year rollover"},
 	}
 	for _, c := range cases {
-		start, end, err := handler.CycleWindow(ctx, bdb, c.ref, c.day)
+		start, end, err := svc.CycleWindow(ctx, c.ref, c.day)
 		if err != nil {
 			t.Fatalf("%s: %v", c.desc, err)
 		}
@@ -60,18 +61,19 @@ func TestCycleWindowDays(t *testing.T) {
 	bdb := testDB(t)
 	defer bdb.Close()
 	ctx := context.Background()
+	svc := service.New(bdb)
 	cases := []struct {
 		anchor     string
 		length     int
 		ref        string
 		start, end string
 	}{
-		{"2026-06-19", 30, "2026-07-10", "2026-06-19", "2026-07-19"}, // within first cycle
-		{"2026-06-19", 30, "2026-07-25", "2026-07-19", "2026-08-18"}, // next cycle (close drifts back)
-		{"2026-06-19", 30, "2026-06-19", "2026-06-19", "2026-07-19"}, // on the anchor
+		{"2026-06-19", 30, "2026-07-10", "2026-06-19", "2026-07-19"},
+		{"2026-06-19", 30, "2026-07-25", "2026-07-19", "2026-08-18"},
+		{"2026-06-19", 30, "2026-06-19", "2026-06-19", "2026-07-19"},
 	}
 	for _, c := range cases {
-		s, e, err := handler.CycleWindowDays(ctx, bdb, c.anchor, c.length, c.ref)
+		s, e, err := svc.CycleWindowDays(ctx, c.anchor, c.length, c.ref)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -85,6 +87,7 @@ func TestBudgetStatusSumsOnlyCardTxInWindow(t *testing.T) {
 	bdb := testDB(t)
 	defer bdb.Close()
 	ctx := context.Background()
+	svc := service.New(bdb)
 
 	exec := func(q string, args ...any) {
 		if _, err := bdb.ExecContext(ctx, q, args...); err != nil {
@@ -97,18 +100,18 @@ func TestBudgetStatusSumsOnlyCardTxInWindow(t *testing.T) {
 		exec("INSERT INTO transactions (dedupe_id,date,bank,amount,currency,category) VALUES (?,?,?,?,'PEN','dining')",
 			id, date, bank, amt)
 	}
-	tx("a", "2026-06-10", "BBVA", 100)         // in window
-	tx("b", "2026-06-20", "BBVA", 50)          // in window
-	tx("c", "2026-06-03", "BBVA", 999)         // before window (prev cycle)
-	tx("d", "2026-07-05", "BBVA", 999)         // == end, exclusive -> out
-	tx("e", "2026-06-15", "Diners Club", 999)  // other card -> out
+	tx("a", "2026-06-10", "BBVA", 100)        // in window
+	tx("b", "2026-06-20", "BBVA", 50)         // in window
+	tx("c", "2026-06-03", "BBVA", 999)        // before window (prev cycle)
+	tx("d", "2026-07-05", "BBVA", 999)        // == end, exclusive -> out
+	tx("e", "2026-06-15", "Diners Club", 999) // other card -> out
 
-	start, end, err := handler.CycleWindow(ctx, bdb, "2026-06-10", 5)
+	start, end, err := svc.CycleWindow(ctx, "2026-06-10", 5)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var row handler.StatusRow
-	err = bdb.NewRaw(handler.BudgetStatusCycleSQL, "BBVA", start, end, "BBVA").Scan(ctx, &row)
+	var row service.StatusRow
+	err = bdb.NewRaw(service.BudgetStatusCycleSQL, "BBVA", start, end, "BBVA").Scan(ctx, &row)
 	if err != nil {
 		t.Fatal(err)
 	}
