@@ -1,89 +1,14 @@
 package handler
 
 import (
-	"context"
-	"database/sql"
-	"encoding/json"
-	"math"
+	"errors"
 	"net/http"
 
-	"github.com/uptrace/bun"
-
-	"finances-api/internal/model"
+	"finances-api/internal/service"
 )
-
-// CycleWindowSQL computes a card's billing-cycle window for a reference date.
-// Positional args (Bun uses positional ?): ref, day, ref, day, ref, day.
-// Returns one row (cstart, cend) where cend = cstart + 1 month; if ref day >=
-// start_day the cycle started this month, else last month.
-const CycleWindowSQL = `SELECT s AS cstart, date(s, '+1 month') AS cend FROM (
-  SELECT date(CASE WHEN CAST(strftime('%d', ?) AS INTEGER) >= ?
-    THEN strftime('%Y-%m-', ?) || printf('%02d', ?)
-    ELSE strftime('%Y-%m-', date(?, '-1 month')) || printf('%02d', ?) END) AS s)`
-
-// BudgetStatusCycleSQL: per-category spend vs limit for a card over a cycle window.
-// Positional args: card, start, end, card.
-const BudgetStatusCycleSQL = `SELECT b.category, b.currency, b.cycle_limit,
-  COALESCE((SELECT SUM(t.amount) FROM transactions t
-    WHERE t.deleted_at IS NULL AND t.category = b.category AND t.currency = b.currency
-      AND t.bank = ? AND t.date >= ? AND t.date < ?), 0.0) AS spent
-  FROM budgets b WHERE b.card = ? ORDER BY b.category, b.currency`
-
-// Positional arg: month.
-const budgetStatusMonthSQL = `SELECT b.category, b.currency, b.cycle_limit,
-  COALESCE((SELECT SUM(t.amount) FROM transactions t
-    WHERE t.deleted_at IS NULL AND t.category = b.category AND t.currency = b.currency
-      AND strftime('%Y-%m', t.date) = ?), 0.0) AS spent
-  FROM budgets b WHERE b.card = '' ORDER BY b.category, b.currency`
-
-// StatusRow scans the 4-column budget-status query.
-type StatusRow struct {
-	Category   string  `bun:"category"`
-	Currency   string  `bun:"currency"`
-	CycleLimit float64 `bun:"cycle_limit"`
-	Spent      float64 `bun:"spent"`
-}
-
-// DaysCycleWindowSQL: fixed-length cycle window. Positional args:
-// anchor, ref, anchor, length, length, length. Returns the [cstart, cend) window
-// of length `length` days, aligned to `anchor`, that contains `ref`.
-const DaysCycleWindowSQL = `WITH w AS (
-  SELECT date(?, '+' || (CAST((julianday(?) - julianday(?)) / ? AS INTEGER) * ?) || ' days') AS cstart
-)
-SELECT cstart, date(cstart, '+' || ? || ' days') AS cend FROM w`
-
-type cycleWindowRow struct {
-	Start string `bun:"cstart"`
-	End   string `bun:"cend"`
-}
-
-// CycleWindow returns [start, end) for a day-of-month cycle. Exported for tests.
-func CycleWindow(ctx context.Context, db *bun.DB, ref string, day int) (string, string, error) {
-	var cr cycleWindowRow
-	err := db.NewRaw(CycleWindowSQL, ref, day, ref, day, ref, day).Scan(ctx, &cr)
-	return cr.Start, cr.End, err
-}
-
-// CycleWindowDays returns [start, end) for a fixed-length cycle. Exported for tests.
-func CycleWindowDays(ctx context.Context, db *bun.DB, anchor string, length int, ref string) (string, string, error) {
-	var cr cycleWindowRow
-	err := db.NewRaw(DaysCycleWindowSQL, anchor, ref, anchor, length, length, length).Scan(ctx, &cr)
-	return cr.Start, cr.End, err
-}
-
-// cycleWindow picks the window strategy from the card's cycle config.
-func cycleWindow(ctx context.Context, db *bun.DB, c *model.Card, ref string) (string, string, error) {
-	if c.CycleType == "days" && c.CycleLengthDays != nil && *c.CycleLengthDays > 0 &&
-		c.CycleAnchor != nil && *c.CycleAnchor != "" {
-		return CycleWindowDays(ctx, db, *c.CycleAnchor, int(*c.CycleLengthDays), ref)
-	}
-	return CycleWindow(ctx, db, ref, clampInt(int(c.CycleStartDay), 1, 28))
-}
 
 func (h *Handler) listBudgets(w http.ResponseWriter, r *http.Request) {
-	budgets := []model.Budget{}
-	err := h.DB.NewSelect().Model(&budgets).
-		Order("card").Order("category").Order("currency").Scan(r.Context())
+	budgets, err := h.Svc.ListBudgets(r.Context())
 	if err != nil {
 		fail(w, err)
 		return
@@ -100,29 +25,17 @@ type budgetBody struct {
 
 func (h *Handler) putBudget(w http.ResponseWriter, r *http.Request) {
 	var b budgetBody
-	if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
-		badRequest(w, "invalid body")
+	if !bind(w, r, &b) {
 		return
 	}
-	ctx := r.Context()
-	card := ""
+	in := service.BudgetInput{Category: b.Category, CycleLimit: b.CycleLimit}
 	if b.Card != nil {
-		card = *b.Card
+		in.Card = *b.Card
 	}
-	currency := "PEN"
-	if b.Currency != nil && *b.Currency != "" {
-		currency = *b.Currency
+	if b.Currency != nil {
+		in.Currency = *b.Currency
 	}
-	if _, err := h.DB.NewInsert().Model(&model.Category{Name: b.Category}).Ignore().Exec(ctx); err != nil {
-		fail(w, err)
-		return
-	}
-	bud := &model.Budget{Card: card, Category: b.Category, Currency: currency, CycleLimit: b.CycleLimit}
-	_, err := h.DB.NewInsert().Model(bud).
-		On("CONFLICT (card, category, currency) DO UPDATE").
-		Set("cycle_limit = EXCLUDED.cycle_limit").
-		Exec(ctx)
-	if err != nil {
+	if err := h.Svc.PutBudget(r.Context(), in); err != nil {
 		fail(w, err)
 		return
 	}
@@ -130,80 +43,18 @@ func (h *Handler) putBudget(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// budgetStatus is the LLM advisor's tool. With ?card= it evaluates over that card's
-// current billing cycle (summing only that card's transactions); without, legacy month mode.
+// budgetStatus is the LLM advisor's tool. ?card= evaluates over that card's current
+// billing cycle; without it, legacy calendar-month mode.
 func (h *Handler) budgetStatus(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
-	ctx := r.Context()
-	bank := q.Get("card")
-
-	if bank == "" {
-		month := q.Get("month")
-		if month == "" {
-			if err := h.DB.NewRaw("SELECT strftime('%Y-%m','now')").Scan(ctx, &month); err != nil {
-				fail(w, err)
-				return
-			}
-		}
-		rows := []StatusRow{}
-		if err := h.DB.NewRaw(budgetStatusMonthSQL, month).Scan(ctx, &rows); err != nil {
-			fail(w, err)
-			return
-		}
-		writeJSON(w, http.StatusOK, map[string]any{"month": month, "budgets": budgetJSON(rows)})
+	res, err := h.Svc.BudgetStatus(r.Context(), q.Get("card"), q.Get("month"), q.Get("date"))
+	if errors.Is(err, service.ErrUnknownCard) {
+		badRequest(w, "unknown card: "+q.Get("card"))
 		return
 	}
-
-	var c model.Card
-	err := h.DB.NewSelect().Model(&c).Where("bank = ?", bank).Scan(ctx)
-	if err == sql.ErrNoRows {
-		badRequest(w, "unknown card: "+bank)
-		return
-	} else if err != nil {
-		fail(w, err)
-		return
-	}
-
-	ref := q.Get("date")
-	if ref == "" {
-		ref = "now"
-	}
-	start, end, err := cycleWindow(ctx, h.DB, &c, ref)
 	if err != nil {
 		fail(w, err)
 		return
 	}
-
-	rows := []StatusRow{}
-	err = h.DB.NewRaw(BudgetStatusCycleSQL, bank, start, end, bank).Scan(ctx, &rows)
-	if err != nil {
-		fail(w, err)
-		return
-	}
-	writeJSON(w, http.StatusOK, map[string]any{
-		"card":        bank,
-		"cycle_start": start,
-		"cycle_end":   end,
-		"budgets":     budgetJSON(rows),
-	})
-}
-
-func budgetJSON(rows []StatusRow) []map[string]any {
-	out := []map[string]any{}
-	for _, b := range rows {
-		pct := 0.0
-		if b.CycleLimit > 0 {
-			pct = math.Round(b.Spent / b.CycleLimit * 100)
-		}
-		out = append(out, map[string]any{
-			"category":  b.Category,
-			"currency":  b.Currency,
-			"limit":     b.CycleLimit,
-			"spent":     b.Spent,
-			"remaining": b.CycleLimit - b.Spent,
-			"over":      b.Spent > b.CycleLimit,
-			"pct":       pct,
-		})
-	}
-	return out
+	writeJSON(w, http.StatusOK, res)
 }

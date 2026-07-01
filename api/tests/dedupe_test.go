@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"finances-api/internal/handler"
+	"finances-api/internal/service"
 )
 
 // Same purchase captured twice with different merchant text + a stray format diff
@@ -13,6 +13,7 @@ func TestDedupeSoftDeletesDuplicatesKeepingBestMerchant(t *testing.T) {
 	bdb := testDB(t)
 	defer bdb.Close()
 	ctx := context.Background()
+	svc := service.New(bdb)
 
 	exec := func(q string, args ...any) {
 		if _, err := bdb.ExecContext(ctx, q, args...); err != nil {
@@ -33,7 +34,7 @@ func TestDedupeSoftDeletesDuplicatesKeepingBestMerchant(t *testing.T) {
 	exec(`INSERT INTO transactions (dedupe_id,date,bank,amount,currency,merchant)
 	      VALUES ('ib:4','2026-06-24','Interbank',75.11,'PEN','partial')`)
 
-	n, err := handler.Dedupe(ctx, bdb)
+	n, err := svc.Dedupe(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +61,7 @@ func TestDedupeSoftDeletesDuplicatesKeepingBestMerchant(t *testing.T) {
 	}
 
 	// idempotent: a second sweep changes nothing
-	if n2, err := handler.Dedupe(ctx, bdb); err != nil || n2 != 0 {
+	if n2, err := svc.Dedupe(ctx); err != nil || n2 != 0 {
 		t.Fatalf("second sweep n=%d err=%v, want 0/nil", n2, err)
 	}
 }

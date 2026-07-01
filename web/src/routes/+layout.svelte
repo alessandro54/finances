@@ -9,6 +9,7 @@
 	const owner = $derived(data?.owner ?? false);
 	const nav = [
 		{ href: '/', label: 'Transactions' },
+		{ href: '/planner', label: 'Planner' },
 		{ href: '/cards', label: 'Cards' },
 		{ href: '/categories', label: 'Categories' }
 	];
@@ -44,8 +45,9 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<div class="flex h-screen flex-col overflow-hidden">
 <header
-	class="sticky top-0 z-10 flex h-14 items-center gap-8 border-b border-border bg-[var(--header-bg)] px-6 backdrop-blur-md"
+	class="z-10 flex h-14 shrink-0 items-center gap-8 border-b border-border bg-[var(--header-bg)] px-6 backdrop-blur-md"
 >
 	<a class="flex items-center gap-2 text-text no-underline" href="/">
 		<span
@@ -58,7 +60,7 @@
 				<rect x="17" y="3" width="4" height="18" rx="1.2" fill="currentColor" />
 			</svg>
 		</span>
-		<span class="text-base font-bold tracking-tight">finances</span>
+		<span class="text-gradient text-base font-bold tracking-tight">finances</span>
 	</a>
 	<nav class="flex gap-1">
 		{#each nav as n}
@@ -111,11 +113,12 @@
 </header>
 
 {#if !owner}
-	<div class="border-b border-warn-border bg-warn-bg px-6 py-2 text-center text-sm text-warn-text">
+	<div class="shrink-0 border-b border-warn-border bg-warn-bg px-6 py-2 text-center text-sm text-warn-text">
 		Demo view — synthetic data. <a href="/login" class="font-semibold underline">Log in</a> for the real dashboard.
 	</div>
 {/if}
 
-<main class="mx-auto max-w-[1000px] px-6 pb-12 pt-7">
+<main class="mx-auto flex w-full min-h-0 max-w-[1760px] flex-1 flex-col overflow-y-auto px-6 py-5">
 	{@render children()}
 </main>
+</div>
